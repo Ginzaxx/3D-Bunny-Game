@@ -25,8 +25,10 @@ public class FallingObject : MonoBehaviour
     public float timerPenalty = 3f;   // detik dikurangi saat nangkep wortel beku
 
     [Header("Fox Settings")]
-    public float foxClickWindow = 2f;  // detik window untuk click rubah
-    public GameObject foxWarningVFX;   // efek peringatan rubah
+    public float foxClickWindow = 2f;   // detik window untuk click rubah
+    public float foxZOffset = 5f;      // jarak Z di belakang player saat spawn
+    public int foxMissCarrotPenalty = 2; // carrot dikurangi jika rubah tidak di-click
+    public GameObject foxWarningVFX;    // efek peringatan rubah
 
     // State
     private bool isCaught = false;
@@ -60,7 +62,7 @@ public class FallingObject : MonoBehaviour
         switch (weatherManager.CurrentWeather)
         {
             case WeatherType.Snow:
-                fallSpeed *= 0.7f;  // salju: wortel salju jatuh lebih lambat
+                fallSpeed *= 0.7f;
                 break;
             case WeatherType.AfternoonDry:
                 fallSpeed *= 1.1f;
@@ -70,6 +72,15 @@ public class FallingObject : MonoBehaviour
 
     void InitFox()
     {
+        // Reset rotasi supaya fox tidak terbalik saat spawn
+        transform.position = new Vector3(transform.position.x, 0.9f, transform.position.z);
+        transform.rotation = Quaternion.Euler(0f, 0f, 90f);
+
+        // Posisikan fox jauh di belakang player
+        Vector3 pos = transform.position;
+        pos.z += foxZOffset;
+        transform.position = pos;
+
         foxWindowOpen = true;
         foxTimer = foxClickWindow;
         if (foxWarningVFX != null) foxWarningVFX.SetActive(true);
@@ -97,13 +108,11 @@ public class FallingObject : MonoBehaviour
 
     void HandleFoxBehavior()
     {
-        // Rubah tidak jatuh, muncul di posisi dan countdown
         if (foxWindowOpen)
         {
             foxTimer -= Time.deltaTime;
             if (foxTimer <= 0f)
             {
-                // Window habis = timer berkurang
                 FoxMissed();
             }
         }
@@ -129,7 +138,13 @@ public class FallingObject : MonoBehaviour
     {
         foxWindowOpen = false;
         isMissed = true;
-        timerManager?.AddTime(-foxClickWindow); // timer berkurang
+
+        // Kurangi timer sesuai window yang terlewat
+        timerManager?.AddTime(-foxClickWindow);
+
+        // Kurangi 20 carrot sebagai penalti
+        scoreManager?.AddCarrot(-foxMissCarrotPenalty);
+
         Destroy(gameObject, 0.5f);
     }
 
@@ -145,12 +160,14 @@ public class FallingObject : MonoBehaviour
         {
             case FallingObjectType.CarrotNormal:
                 timerManager?.AddTime(timerBonus);
-                scoreManager?.AddScore(10);
+                scoreManager?.AddCarrot(1);   // +1 carrot
+                scoreManager?.AddScore(5);    // +5 score
                 break;
 
             case FallingObjectType.CarrotFrozen:
                 timerManager?.AddTime(-timerPenalty);
-                scoreManager?.AddScore(5);
+                scoreManager?.AddCarrot(1);   // +1 carrot (wortel beku tetap dihitung)
+                scoreManager?.AddScore(5);    // +5 score
                 break;
         }
 
@@ -160,7 +177,6 @@ public class FallingObject : MonoBehaviour
     void OnMissed()
     {
         isMissed = true;
-        // Tidak ada efek khusus saat wortel jatuh meleset
         Destroy(gameObject);
     }
 

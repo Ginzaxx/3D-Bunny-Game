@@ -8,12 +8,12 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Movement Settings")]
     public float moveSpeed = 8f;
-    public float boundaryLeft = -8f;
-    public float boundaryRight = 8f;
+    public float boundaryLeft  = -8f;
+    public float boundaryRight =  8f;
 
     [Header("Catch Settings")]
-    public float catchWidth = 1.5f;   // lebar keranjang / area tangkap
-    public Transform basketTransform;  // keranjang kelinci
+    public float catchWidth = 1.5f;
+    public Transform basketTransform;
 
     [Header("Visual Feedback")]
     public Animator animator;
@@ -22,11 +22,10 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
     private Vector3 targetPosition;
     private WeatherManager weatherManager;
-    private int score = 0;
 
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
+        rb             = GetComponent<Rigidbody>();
         weatherManager = FindObjectOfType<WeatherManager>();
         targetPosition = transform.position;
     }
@@ -46,13 +45,11 @@ public class PlayerController : MonoBehaviour
     {
         float input = 0f;
 
-        // Keyboard input
         if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
             input = -1f;
         else if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
             input = 1f;
 
-        // Mobile touch input
         if (Input.touchCount > 0)
         {
             Touch touch = Input.GetTouch(0);
@@ -61,23 +58,13 @@ public class PlayerController : MonoBehaviour
         }
 
         float speed = moveSpeed;
-        // Salju: kecepatan berkurang
         if (weatherManager != null && weatherManager.CurrentWeather == WeatherType.Snow)
             speed *= 0.6f;
 
         targetPosition = transform.position + Vector3.right * input * speed * Time.deltaTime;
 
-        // Animasi jalan
         if (animator != null)
             animator.SetFloat("Speed", Mathf.Abs(input));
-
-        // Flip sprite / rotation berdasar arah
-        if (input != 0)
-        {
-            Vector3 scale = transform.localScale;
-            scale.x = Mathf.Abs(scale.x) * (input > 0 ? 1 : -1);
-            transform.localScale = scale;
-        }
     }
 
     void MovePlayer()
@@ -90,7 +77,7 @@ public class PlayerController : MonoBehaviour
         Vector3 pos = transform.position;
         pos.x = Mathf.Clamp(pos.x, boundaryLeft, boundaryRight);
         transform.position = pos;
-        targetPosition.x = Mathf.Clamp(targetPosition.x, boundaryLeft, boundaryRight);
+        targetPosition.x   = Mathf.Clamp(targetPosition.x, boundaryLeft, boundaryRight);
     }
 
     /// <summary>
@@ -103,21 +90,20 @@ public class PlayerController : MonoBehaviour
         float dist = Mathf.Abs(obj.transform.position.x - basketTransform.position.x);
         if (dist <= catchWidth)
         {
-            OnCatchSuccess(obj);
+            OnCatchSuccess();
             return true;
         }
         return false;
     }
 
-    void OnCatchSuccess(FallingObject obj)
+    void OnCatchSuccess()
     {
-        score++;
+        // Score & carrot sekarang ditangani sepenuhnya di FallingObject.OnCaught()
+        // yang memanggil ScoreManager.AddCarrot() dan ScoreManager.AddScore()
         if (catchEffect != null)
             catchEffect.Play();
 
         if (animator != null)
             animator.SetTrigger("Catch");
     }
-
-    public int Score => score;
 }
