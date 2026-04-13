@@ -32,8 +32,8 @@ AnimatorStateMachine:
   m_Name: Base Layer
   m_ChildStates:
   - serializedVersion: 1
-    m_State: {fileID: 7301599128442261839}
-    m_Position: {x: 320, y: 110, z: 0}
+    m_State: {fileID: 6795025372366736929}
+    m_Position: {x: 412.61707, y: 44.233154, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
@@ -43,15 +43,15 @@ AnimatorStateMachine:
   m_EntryPosition: {x: 50, y: 120, z: 0}
   m_ExitPosition: {x: 800, y: 120, z: 0}
   m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}
-  m_DefaultState: {fileID: 7301599128442261839}
---- !u!1102 &7301599128442261839
+  m_DefaultState: {fileID: 6795025372366736929}
+--- !u!1102 &6795025372366736929
 AnimatorState:
   serializedVersion: 6
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: metarig|metarigAction
+  m_Name: metarig|metarigAction 0
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -64,7 +64,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: -887982601649841707, guid: a7603f2513be05d479ee1496918a27e0, type: 3}
+  m_Motion: {fileID: -887982601649841707, guid: 430e8e1ac896fa748a32d1c074c996c7, type: 3}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
