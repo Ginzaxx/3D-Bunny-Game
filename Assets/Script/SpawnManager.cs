@@ -20,7 +20,11 @@ public class SpawnManager : MonoBehaviour
     public float spawnY = 10f;
 
     [Header("Spawn Rate (detik)")]
-    public float baseSpawnRate = 1.2f;
+    public float baseSpawnRate = 1.5f;     // Waktu spawn awal (paling lambat)
+    public float minSpawnRate = 0.7f;      // Waktu spawn tercepat (saat mencapai target)
+    public int targetCarrotsForMaxSpeed = 90; // Target wortel agar kecepatan spawn maksimal
+    
+    [Space]
     public float foxSpawnInterval = 8f;    // Siang: jarang
     public float foxSpawnIntervalAfternoon = 4f; // Sore: sering
 
@@ -30,6 +34,8 @@ public class SpawnManager : MonoBehaviour
 
     private WeatherManager weatherManager;
     private GameManager gameManager;
+    private ScoreManager scoreManager; // Tambahkan referensi ke ScoreManager
+
     private bool isSpawning = false;
     private Coroutine spawnCoroutine;
     private Coroutine foxCoroutine;
@@ -38,6 +44,7 @@ public class SpawnManager : MonoBehaviour
     {
         weatherManager = FindObjectOfType<WeatherManager>();
         gameManager = FindObjectOfType<GameManager>();
+        scoreManager = FindObjectOfType<ScoreManager>(); // Mencari ScoreManager saat game mulai
     }
 
     public void StartSpawning()
@@ -81,19 +88,28 @@ public class SpawnManager : MonoBehaviour
 
     float GetSpawnRate()
     {
-        float rate = baseSpawnRate;
-        if (weatherManager == null) return rate;
+        // 1. Hitung kecepatan dasar berdasarkan progres wortel
+        float currentRate = baseSpawnRate;
 
-        switch (weatherManager.CurrentWeather)
+        if (scoreManager != null)
         {
-            case WeatherType.Snow:
-                rate *= 0.8f; // Salju: spawn lebih cepat
-                break;
-            case WeatherType.AfternoonDry:
-                rate *= 0.9f;
-                break;
+            // Hitung persentase (0.0 sampai 1.0)
+            // Mathf.Clamp01 memastikan nilainya tidak lebih dari 1 (100%) meskipun wortel > 90
+            float progress = Mathf.Clamp01((float)scoreManager.CarrotCount / targetCarrotsForMaxSpeed);
+            
+            // Semakin besar progress, currentRate akan semakin mendekati minSpawnRate (semakin cepat)
+            currentRate = Mathf.Lerp(baseSpawnRate, minSpawnRate, progress);
         }
-        return rate;
+
+        // 2. Modifikasi tambahan dari cuaca
+        if (weatherManager != null)
+        {
+            switch (weatherManager.CurrentWeather)
+            {
+            }
+        }
+
+        return currentRate;
     }
 
     float GetFoxInterval()
