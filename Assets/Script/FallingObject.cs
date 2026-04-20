@@ -18,6 +18,7 @@ public class FallingObject : MonoBehaviour
 
     [Header("Fall Settings")]
     public float fallSpeed = 4f;
+    public float maxFallSpeed = 8f; // Kecepatan maksimal (~1.5 detik untuk jarak 20 unit)
     public float destroyY = -10f;
 
     [Header("Timer Effect")]
@@ -62,10 +63,12 @@ public class FallingObject : MonoBehaviour
         switch (weatherManager.CurrentWeather)
         {
             case WeatherType.Snow:
-                fallSpeed *= 0.7f;
+                fallSpeed *= 1.3f;
+                maxFallSpeed *= 1.5f; // Jangan lupa update max speed untuk salju
                 break;
             case WeatherType.AfternoonDry:
                 fallSpeed *= 1.1f;
+                maxFallSpeed *= 1.3f; // Jangan lupa update max speed untuk sore
                 break;
         }
     }
@@ -73,7 +76,7 @@ public class FallingObject : MonoBehaviour
     void InitFox()
     {
         // Reset rotasi supaya fox tidak terbalik saat spawn
-        transform.position = new Vector3(transform.position.x, 0.9f, transform.position.z);
+        transform.position = new Vector3(transform.position.x, 0f, transform.position.z);
         transform.rotation = Quaternion.Euler(0f, 0f, 90f);
 
         // Posisikan fox jauh di belakang player
@@ -96,8 +99,17 @@ public class FallingObject : MonoBehaviour
             return;
         }
 
+        // Hitung kecepatan jatuh dinamis berdasarkan jumlah carrot
+        float currentSpeed = fallSpeed;
+        if (scoreManager != null)
+        {
+            // Lerp kecepatan dari kecepatan awal ke kecepatan maksimal (13.3f)
+            float progress = (float)scoreManager.CarrotCount / scoreManager.targetCarrots;
+            currentSpeed = Mathf.Lerp(fallSpeed, maxFallSpeed, progress);
+        }
+
         // Jatuh ke bawah
-        transform.Translate(Vector3.down * fallSpeed * Time.deltaTime);
+        transform.Translate(Vector3.down * currentSpeed * Time.deltaTime);
 
         // Lewat batas bawah = missed
         if (transform.position.y < destroyY)
@@ -139,18 +151,14 @@ public class FallingObject : MonoBehaviour
         foxWindowOpen = false;
         isMissed = true;
 
-        // Kurangi timer sesuai window yang terlewat
-        timerManager?.AddTime(-foxClickWindow);
-
-        // Kurangi 20 carrot sebagai penalti
-        scoreManager?.AddCarrot(-foxMissCarrotPenalty);
+        // Penalti disesuaikan untuk target 75 carrot
+        timerManager?.AddTime(-15f);
+        scoreManager?.AddCarrot(-10);
+        scoreManager?.AddScore(-50);
 
         Destroy(gameObject, 0.5f);
     }
 
-    /// <summary>
-    /// Dipanggil oleh PlayerController saat objek tertangkap
-    /// </summary>
     public void OnCaught()
     {
         if (isCaught) return;
@@ -159,15 +167,21 @@ public class FallingObject : MonoBehaviour
         switch (objectType)
         {
             case FallingObjectType.CarrotNormal:
-                timerManager?.AddTime(timerBonus);
-                scoreManager?.AddCarrot(1);   // +1 carrot
-                scoreManager?.AddScore(5);    // +5 score
+                float progress = 0f;
+                if (scoreManager != null) progress = (float)scoreManager.CarrotCount / scoreManager.targetCarrots;
+                float dynamicBonus = 3f - (0.5f * progress);
+                
+                timerManager?.AddTime(dynamicBonus);
+                scoreManager?.AddCarrot(1);
+                scoreManager?.AddScore(5);
                 break;
 
             case FallingObjectType.CarrotFrozen:
-                timerManager?.AddTime(-timerPenalty);
-                scoreManager?.AddCarrot(1);   // +1 carrot (wortel beku tetap dihitung)
-                scoreManager?.AddScore(5);    // +5 score
+                if (timerManager != null)
+                {
+                    float penalty = 5f + timerManager.CurrentTime * 0.2f;
+                    timerManager.AddTime(-penalty);
+                }
                 break;
         }
 
@@ -180,7 +194,6 @@ public class FallingObject : MonoBehaviour
         Destroy(gameObject);
     }
 
-    // Collision dengan keranjang player
     void OnTriggerEnter(Collider other)
     {
         if (isCaught || isMissed) return;
