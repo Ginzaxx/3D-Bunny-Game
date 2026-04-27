@@ -90,6 +90,7 @@ public class GameManager : MonoBehaviour
         timerManager?.StopTimer();
         int finalScore = scoreManager != null ? scoreManager.CurrentScore : 0;
         uiManager?.ShowWin(finalScore);
+        AudioManager.Instance?.PlayWin();
         Debug.Log($"[GameManager] Game Won! Score: {finalScore}");
     }
 
@@ -99,6 +100,7 @@ public class GameManager : MonoBehaviour
         spawnManager?.StopSpawning();
         int finalScore = scoreManager != null ? scoreManager.CurrentScore : 0;
         uiManager?.ShowGameOver(finalScore);
+        AudioManager.Instance?.PlayLose();
         Debug.Log($"[GameManager] Game Over! Score: {finalScore}");
     }
 

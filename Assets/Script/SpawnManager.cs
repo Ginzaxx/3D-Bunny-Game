@@ -156,6 +156,7 @@ public class SpawnManager : MonoBehaviour
         Vector3 spawnPos = new Vector3(x, y, 0f);
 
         Instantiate(foxPrefab, spawnPos, Quaternion.identity);
+        AudioManager.Instance?.PlayFoxAppear();
         Debug.Log($"[SpawnManager] Rubah muncul di {spawnPos}");
     }
 }

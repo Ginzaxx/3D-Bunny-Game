@@ -140,9 +140,11 @@ public class FallingObject : MonoBehaviour
 
     public void FoxClicked()
     {
+        if (isCaught) return;
         isCaught = true;
         foxWindowOpen = false;
         scoreManager?.AddScore(10);
+        AudioManager.Instance?.PlayFoxClick();
         Destroy(gameObject, 0.3f);
     }
 
@@ -155,6 +157,7 @@ public class FallingObject : MonoBehaviour
         timerManager?.AddTime(-15f);
         scoreManager?.AddCarrot(-10);
         scoreManager?.AddScore(-50);
+        AudioManager.Instance?.PlayFoxMissed();
 
         Destroy(gameObject, 0.5f);
     }
@@ -174,6 +177,7 @@ public class FallingObject : MonoBehaviour
                 timerManager?.AddTime(dynamicBonus);
                 scoreManager?.AddCarrot(1);
                 scoreManager?.AddScore(5);
+                AudioManager.Instance?.PlayCatchNormal();
                 break;
 
             case FallingObjectType.CarrotFrozen:
@@ -182,6 +186,7 @@ public class FallingObject : MonoBehaviour
                     float penalty = 5f + timerManager.CurrentTime * 0.2f;
                     timerManager.AddTime(-penalty);
                 }
+                AudioManager.Instance?.PlayCatchFrozen();
                 break;
         }
 

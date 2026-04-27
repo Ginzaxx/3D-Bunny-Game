@@ -45,6 +45,7 @@ public class WeatherManager : MonoBehaviour
     {
         CurrentWeather = newWeather;
         ApplyWeather(newWeather);
+        AudioManager.Instance?.PlaySeasonChange();
         Debug.Log($"[WeatherManager] Cuaca berubah ke: {newWeather}");
     }
 
@@ -54,6 +55,8 @@ public class WeatherManager : MonoBehaviour
         if (snowParticleSystem  != null) snowParticleSystem.SetActive(false);
         if (sunEffect           != null) sunEffect.SetActive(false);
         if (afternoonLightEffect != null) afternoonLightEffect.SetActive(false);
+
+        AudioManager.Instance?.PlayMusicForWeather(weather);
 
         switch (weather)
         {

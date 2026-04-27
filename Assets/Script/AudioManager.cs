@@ -23,6 +23,9 @@ public class AudioManager : MonoBehaviour
     public AudioClip sfxTimerLow;
     public AudioClip sfxGameOver;
     public AudioClip sfxButtonClick;
+    public AudioClip sfxSeasonChange;
+    public AudioClip sfxGameWin;
+    public AudioClip sfxGameLose;
 
     [Header("Sources")]
     public AudioSource musicSource;
@@ -67,6 +70,7 @@ public class AudioManager : MonoBehaviour
 
         musicSource.clip = clip;
         musicSource.loop = true;
+        musicSource.volume = 0.8f; // Set default music volume to 0.8
         musicSource.Play();
     }
 
@@ -76,17 +80,20 @@ public class AudioManager : MonoBehaviour
 
     public void PlayCatchNormal()    => PlaySFX(sfxCatchCarrotNormal);
     public void PlayCatchFrozen()    => PlaySFX(sfxCatchCarrotFrozen);
-    public void PlayFoxAppear()      => PlaySFX(sfxFoxAppear);
-    public void PlayFoxClick()       => PlaySFX(sfxFoxClick);
-    public void PlayFoxMissed()      => PlaySFX(sfxFoxMissed);
+    public void PlayFoxAppear()      => PlaySFX(sfxFoxAppear, 2.0f); // Volume 2x
+    public void PlayFoxClick()       => PlaySFX(sfxFoxClick, 3.0f);  // Volume 2x
+    public void PlayFoxMissed()      => PlaySFX(sfxFoxMissed, 3.0f); // Volume 2x
     public void PlayTimerLow()       => PlaySFX(sfxTimerLow);
     public void PlayGameOver()       => PlaySFX(sfxGameOver);
     public void PlayButtonClick()    => PlaySFX(sfxButtonClick);
+    public void PlaySeasonChange()   => PlaySFX(sfxSeasonChange);
+    public void PlayWin()            => PlaySFX(sfxGameWin);
+    public void PlayLose()           => PlaySFX(sfxGameLose);
 
-    void PlaySFX(AudioClip clip)
+    void PlaySFX(AudioClip clip, float volumeMultiplier = 1.0f)
     {
         if (clip == null || sfxSource == null) return;
-        sfxSource.PlayOneShot(clip);
+        sfxSource.PlayOneShot(clip, volumeMultiplier);
     }
 
     public void SetMusicVolume(float vol)

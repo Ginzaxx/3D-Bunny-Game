@@ -31,6 +31,8 @@ public class MainMenu : MonoBehaviour
 
     private void Start()
     {
+        AudioManager.Instance?.PlayMenuMusic();
+
         if (startButton != null)
             startButton.onClick.AddListener(StartGame);
 
