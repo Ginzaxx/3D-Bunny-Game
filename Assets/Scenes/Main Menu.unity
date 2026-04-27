@@ -13664,8 +13664,8 @@ MonoBehaviour:
   sfxCatchCarrotNormal: {fileID: 8300000, guid: fd6a575d83c6a1b45b1f521e5744dd2c, type: 3}
   sfxCatchCarrotFrozen: {fileID: 8300000, guid: 47cc78b3315dd6141922828bbda339d2, type: 3}
   sfxFoxAppear: {fileID: 8300000, guid: 7491f2cec28ac2d4c84612aa1176846f, type: 3}
-  sfxFoxClick: {fileID: 8300000, guid: 0e67a8b0a4a46d14782fdb2317831cb7, type: 3}
-  sfxFoxMissed: {fileID: 8300000, guid: 0e67a8b0a4a46d14782fdb2317831cb7, type: 3}
+  sfxFoxClick: {fileID: 8300000, guid: a3e8dea6e33856740a0d03689debca95, type: 3}
+  sfxFoxMissed: {fileID: 8300000, guid: a3e8dea6e33856740a0d03689debca95, type: 3}
   sfxTimerLow: {fileID: 0}
   sfxGameOver: {fileID: 8300000, guid: 03a54d77cd966ef48bca9295df659736, type: 3}
   sfxButtonClick: {fileID: 0}
