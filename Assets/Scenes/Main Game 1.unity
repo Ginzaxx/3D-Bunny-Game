@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 80fa4f34db87aad4d93c45188b19bfd6, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -6693,7 +6693,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &625421071
 Transform:
   m_ObjectHideFlags: 0
@@ -7833,9 +7833,9 @@ MonoBehaviour:
   sunEffect: {fileID: 0}
   afternoonLightEffect: {fileID: 0}
   snowSpecialObject: {fileID: 750819961}
-  daySkybox: {fileID: 0}
-  afternoonSkybox: {fileID: 0}
-  snowSkybox: {fileID: 0}
+  daySkybox: {fileID: 2100000, guid: 12ccb828343c3405fb94289774b51aad, type: 2}
+  afternoonSkybox: {fileID: 2100000, guid: 6e00f8b39315691449f256740a5cb862, type: 2}
+  snowSkybox: {fileID: 2100000, guid: 80fa4f34db87aad4d93c45188b19bfd6, type: 2}
   directionalLight: {fileID: 705507994}
   dayLightColor: {r: 1, g: 0.95, b: 0.8, a: 1}
   afternoonLightColor: {r: 1, g: 0.6, b: 0.2, a: 1}
@@ -52189,6 +52189,7 @@ MonoBehaviour:
   foxSpawnIntervalAfternoon: 4
   frozenCarrotChance: 0.2
   snowCarrotChance: 0.4
+  foxPoolSize: 5
 --- !u!4 &1857067587 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 5d9a19e0efe7b2e4a926e2ac77feb25d, type: 3}

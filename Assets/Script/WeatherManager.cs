@@ -40,6 +40,7 @@ public class WeatherManager : MonoBehaviour
     void Start()
     {
         ApplyWeather(CurrentWeather);
+        DynamicGI.UpdateEnvironment();
     }
 
     public void ChangeWeather(WeatherType newWeather)
@@ -47,6 +48,7 @@ public class WeatherManager : MonoBehaviour
         CurrentWeather = newWeather;
         ApplyWeather(newWeather);
         AudioManager.Instance?.PlaySeasonChange();
+        DynamicGI.UpdateEnvironment();
         Debug.Log($"[WeatherManager] Cuaca berubah ke: {newWeather}");
     }
 
