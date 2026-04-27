@@ -18,7 +18,7 @@ public class FallingObject : MonoBehaviour
 
     [Header("Fall Settings")]
     public float fallSpeed = 4f;
-    public float maxFallSpeed = 8f; // Kecepatan maksimal (~1.5 detik untuk jarak 20 unit)
+    public float maxFallSpeed = 7f; // Kecepatan maksimal (~1.5 detik untuk jarak 20 unit)
     public float destroyY = -10f;
 
     [Header("Timer Effect")]
@@ -54,6 +54,17 @@ public class FallingObject : MonoBehaviour
 
         if (objectType == FallingObjectType.Fox)
             InitFox();
+    }
+
+    void OnEnable()
+    {
+        isCaught = false;
+        isMissed = false;
+        
+        if (objectType == FallingObjectType.Fox)
+        {
+            InitFox();
+        }
     }
 
     void AdjustSpeedForWeather()
@@ -145,7 +156,11 @@ public class FallingObject : MonoBehaviour
         foxWindowOpen = false;
         scoreManager?.AddScore(10);
         AudioManager.Instance?.PlayFoxClick();
-        Destroy(gameObject, 0.3f);
+        
+        if (objectType == FallingObjectType.Fox)
+            gameObject.SetActive(false); // Pooled
+        else
+            Destroy(gameObject, 0.3f);
     }
 
     void FoxMissed()
@@ -159,7 +174,10 @@ public class FallingObject : MonoBehaviour
         scoreManager?.AddScore(-50);
         AudioManager.Instance?.PlayFoxMissed();
 
-        Destroy(gameObject, 0.5f);
+        if (objectType == FallingObjectType.Fox)
+            gameObject.SetActive(false); // Pooled
+        else
+            Destroy(gameObject, 0.5f);
     }
 
     public void OnCaught()
@@ -190,13 +208,20 @@ public class FallingObject : MonoBehaviour
                 break;
         }
 
-        Destroy(gameObject, 0.1f);
+        if (objectType == FallingObjectType.Fox)
+            gameObject.SetActive(false); // Pooled
+        else
+            Destroy(gameObject, 0.1f);
     }
 
     void OnMissed()
     {
         isMissed = true;
-        Destroy(gameObject);
+        
+        if (objectType == FallingObjectType.Fox)
+            gameObject.SetActive(false); // Pooled
+        else
+            Destroy(gameObject);
     }
 
     void OnTriggerEnter(Collider other)

@@ -32,6 +32,10 @@ public class SpawnManager : MonoBehaviour
     [Range(0, 1)] public float frozenCarrotChance = 0.2f;
     [Range(0, 1)] public float snowCarrotChance = 0.4f; // Salju: wortel salju sering
 
+    [Header("Pooling Settings")]
+    public int foxPoolSize = 5;
+    private List<GameObject> foxPool = new List<GameObject>();
+
     private WeatherManager weatherManager;
     private GameManager gameManager;
     private ScoreManager scoreManager; // Tambahkan referensi ke ScoreManager
@@ -45,6 +49,37 @@ public class SpawnManager : MonoBehaviour
         weatherManager = FindObjectOfType<WeatherManager>();
         gameManager = FindObjectOfType<GameManager>();
         scoreManager = FindObjectOfType<ScoreManager>(); // Mencari ScoreManager saat game mulai
+        
+        InitializeFoxPool();
+    }
+
+    void InitializeFoxPool()
+    {
+        if (foxPrefab == null) return;
+        
+        for (int i = 0; i < foxPoolSize; i++)
+        {
+            GameObject obj = Instantiate(foxPrefab);
+            obj.SetActive(false);
+            foxPool.Add(obj);
+        }
+    }
+
+    public GameObject GetFoxFromPool()
+    {
+        foreach (GameObject fox in foxPool)
+        {
+            if (!fox.activeInHierarchy)
+            {
+                return fox;
+            }
+        }
+
+        // Opsional: Expand pool jika semua sedang dipakai
+        GameObject newFox = Instantiate(foxPrefab);
+        newFox.SetActive(false);
+        foxPool.Add(newFox);
+        return newFox;
     }
 
     public void StartSpawning()
@@ -148,15 +183,19 @@ public class SpawnManager : MonoBehaviour
 
     void SpawnFox()
     {
-        if (foxPrefab == null) return;
+        GameObject fox = GetFoxFromPool();
+        if (fox == null) return;
 
         // Rubah muncul di posisi random X, tidak jatuh (Y tetap)
         float x = Random.Range(spawnXMin + 2f, spawnXMax - 2f);
         float y = Random.Range(-2f, 3f); // muncul di area tengah layar
         Vector3 spawnPos = new Vector3(x, y, 0f);
 
-        Instantiate(foxPrefab, spawnPos, Quaternion.identity);
+        fox.transform.position = spawnPos;
+        fox.transform.rotation = Quaternion.identity;
+        fox.SetActive(true);
+
         AudioManager.Instance?.PlayFoxAppear();
-        Debug.Log($"[SpawnManager] Rubah muncul di {spawnPos}");
+        Debug.Log($"[SpawnManager] Rubah (Pooled) muncul di {spawnPos}");
     }
 }
