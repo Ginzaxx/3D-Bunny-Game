@@ -13661,8 +13661,8 @@ MonoBehaviour:
   bgmAfternoon: {fileID: 8300000, guid: d601a53e5a322eb47bb6917b5b7d7f5e, type: 3}
   bgmSnow: {fileID: 8300000, guid: 7e24bc7d5742bed498d5032452c8fbfd, type: 3}
   bgmMenu: {fileID: 8300000, guid: f1054e9ffb4adc6449def045759dca8a, type: 3}
-  sfxCatchCarrotNormal: {fileID: 8300000, guid: fd6a575d83c6a1b45b1f521e5744dd2c, type: 3}
-  sfxCatchCarrotFrozen: {fileID: 8300000, guid: 47cc78b3315dd6141922828bbda339d2, type: 3}
+  sfxCatchCarrotNormal: {fileID: 8300000, guid: 83ec01fd1cf581745a0096ffdd9cdeb9, type: 3}
+  sfxCatchCarrotFrozen: {fileID: 8300000, guid: b3178f49b16c5bb49b29ac81514b76e1, type: 3}
   sfxFoxAppear: {fileID: 8300000, guid: 7491f2cec28ac2d4c84612aa1176846f, type: 3}
   sfxFoxClick: {fileID: 8300000, guid: a3e8dea6e33856740a0d03689debca95, type: 3}
   sfxFoxMissed: {fileID: 8300000, guid: a3e8dea6e33856740a0d03689debca95, type: 3}
