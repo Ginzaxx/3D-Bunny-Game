@@ -8,6 +8,10 @@ TagManager:
   - Fox
   - Carrot
   - Ground
+  - Kit
+  - Board
+  - Grill
+  - Pot
   layers:
   - Default
   - TransparentFX

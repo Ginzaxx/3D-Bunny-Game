@@ -15,6 +15,9 @@ public class PlayerController : MonoBehaviour
     public float catchWidth = 1.5f;
     public Transform basketTransform;
 
+    [Header("Cooking References")]
+    public Interactable interactGO;
+
     [Header("Visual Feedback")]
     public Animator animator;
     public ParticleSystem catchEffect;
@@ -49,6 +52,9 @@ public class PlayerController : MonoBehaviour
             input = -1f;
         else if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
             input = 1f;
+
+        if (Input.GetKey(KeyCode.E) && interactGO != null)
+            interactGO.OnInteract();
 
         if (Input.touchCount > 0)
         {
@@ -105,5 +111,15 @@ public class PlayerController : MonoBehaviour
 
         if (animator != null)
             animator.SetTrigger("Catch");
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        interactGO = other.gameObject.GetComponent<Interactable>();
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        interactGO = null;
     }
 }

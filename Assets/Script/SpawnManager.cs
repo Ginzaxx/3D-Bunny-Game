@@ -12,6 +12,7 @@ public class SpawnManager : MonoBehaviour
     [Header("Prefabs")]
     public GameObject carrotNormalPrefab;
     public GameObject carrotFrozenPrefab;
+    public GameObject kitObject;
     public GameObject foxPrefab;
 
     [Header("Spawn Area")]
@@ -21,6 +22,7 @@ public class SpawnManager : MonoBehaviour
 
     [Header("Spawn Rate (detik)")]
     public float baseSpawnRate = 1.2f;
+    public float kitSpawnRate = 20f;
     public float foxSpawnInterval = 8f;    // Siang: jarang
     public float foxSpawnIntervalAfternoon = 4f; // Sore: sering
 
@@ -32,6 +34,7 @@ public class SpawnManager : MonoBehaviour
     private GameManager gameManager;
     private bool isSpawning = false;
     private Coroutine spawnCoroutine;
+    private Coroutine kitCoroutine;
     private Coroutine foxCoroutine;
 
     void Start()
@@ -44,6 +47,7 @@ public class SpawnManager : MonoBehaviour
     {
         isSpawning = true;
         spawnCoroutine = StartCoroutine(SpawnLoop());
+        kitCoroutine = StartCoroutine(KitSpawnLoop());
         foxCoroutine = StartCoroutine(FoxSpawnLoop());
     }
 
@@ -51,6 +55,7 @@ public class SpawnManager : MonoBehaviour
     {
         isSpawning = false;
         if (spawnCoroutine != null) StopCoroutine(spawnCoroutine);
+        if (kitCoroutine != null) StopCoroutine(kitCoroutine);
         if (foxCoroutine != null) StopCoroutine(foxCoroutine);
     }
 
@@ -61,6 +66,17 @@ public class SpawnManager : MonoBehaviour
             float rate = GetSpawnRate();
             yield return new WaitForSeconds(rate);
             SpawnCarrot();
+        }
+    }
+
+    IEnumerator KitSpawnLoop()
+    {
+        while (isSpawning)
+        {
+            float rate = GetKitSpawnRate();
+            yield return new WaitForSeconds(rate);
+
+            SpawnKit();
         }
     }
 
@@ -91,6 +107,23 @@ public class SpawnManager : MonoBehaviour
                 break;
             case WeatherType.AfternoonDry:
                 rate *= 0.9f;
+                break;
+        }
+        return rate;
+    }
+
+    float GetKitSpawnRate()
+    {
+        float rate = kitSpawnRate;
+        if (weatherManager == null) return rate;
+
+        switch (weatherManager.CurrentWeather)
+        {
+            case WeatherType.Snow:
+                rate *= 0.6f;
+                break;
+            case WeatherType.AfternoonDry:
+                rate *= 0.8f;
                 break;
         }
         return rate;
@@ -131,6 +164,19 @@ public class SpawnManager : MonoBehaviour
     }
 
     void SpawnFox()
+    {
+        if (foxPrefab == null) return;
+
+        // Rubah muncul di posisi random X, tidak jatuh (Y tetap)
+        float x = Random.Range(spawnXMin + 2f, spawnXMax - 2f);
+        float y = Random.Range(-2f, 3f); // muncul di area tengah layar
+        Vector3 spawnPos = new Vector3(x, y, 0f);
+
+        Instantiate(foxPrefab, spawnPos, Quaternion.identity);
+        Debug.Log($"[SpawnManager] Rubah muncul di {spawnPos}");
+    }
+
+    void SpawnKit()
     {
         if (foxPrefab == null) return;
 
