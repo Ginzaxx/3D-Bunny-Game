@@ -24,6 +24,7 @@ public class WeatherManager : MonoBehaviour
     public GameObject snowParticleSystem;
     public GameObject sunEffect;
     public GameObject afternoonLightEffect;
+    public GameObject snowSpecialObject; // Object khusus saat salju
 
     [Header("Skybox Materials")]
     public Material daySkybox;
@@ -39,12 +40,15 @@ public class WeatherManager : MonoBehaviour
     void Start()
     {
         ApplyWeather(CurrentWeather);
+        DynamicGI.UpdateEnvironment();
     }
 
     public void ChangeWeather(WeatherType newWeather)
     {
         CurrentWeather = newWeather;
         ApplyWeather(newWeather);
+        AudioManager.Instance?.PlaySeasonChange();
+        DynamicGI.UpdateEnvironment();
         Debug.Log($"[WeatherManager] Cuaca berubah ke: {newWeather}");
     }
 
@@ -54,6 +58,9 @@ public class WeatherManager : MonoBehaviour
         if (snowParticleSystem  != null) snowParticleSystem.SetActive(false);
         if (sunEffect           != null) sunEffect.SetActive(false);
         if (afternoonLightEffect != null) afternoonLightEffect.SetActive(false);
+        if (snowSpecialObject   != null) snowSpecialObject.SetActive(false);
+
+        AudioManager.Instance?.PlayMusicForWeather(weather);
 
         switch (weather)
         {
@@ -88,6 +95,7 @@ public class WeatherManager : MonoBehaviour
     void ApplySnowWeather()
     {
         if (snowParticleSystem != null) snowParticleSystem.SetActive(true);
+        if (snowSpecialObject  != null) snowSpecialObject.SetActive(true);
         if (snowSkybox         != null) RenderSettings.skybox = snowSkybox;
         if (directionalLight != null)
         {

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 /// <summary>
@@ -56,6 +57,20 @@ public class UIManager : MonoBehaviour
         ShowMenu();
     }
 
+    void Update()
+    {
+        // Cek apakah gameOverPanel sedang aktif
+        if (gameOverPanel != null && gameOverPanel.activeInHierarchy)
+        {
+            // Jika menekan Enter (Return) atau Escape
+            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Escape))
+            {
+                // Memanggil fungsi yang sudah ada untuk kembali ke menu
+                OnMainMenuButtonPressed();
+            }
+        }
+    }
+
     // ============================
     //   Panel Controls
     // ============================
@@ -92,12 +107,25 @@ public class UIManager : MonoBehaviour
 
         if (gameOverMessage != null)
         {
-            string[] messages = {
-                "Waktu Habis! 🥕",
-                "Kelinci Kelelahan! 😅",
-                "Coba Lagi! 🐰"
-            };
-            gameOverMessage.text = messages[Random.Range(0, messages.Length)];
+            gameOverMessage.text = "Waktu Habis!";
+        }
+    }
+
+    public void ShowWin(int finalScore)
+    {
+        SetAllPanels(false);
+        if (gameOverPanel != null) gameOverPanel.SetActive(true);
+
+        if (finalScoreText != null)
+            finalScoreText.text = $"Score: {finalScore}";
+
+        ScoreManager sm = FindObjectOfType<ScoreManager>();
+        if (highScoreText != null && sm != null)
+            highScoreText.text = $"Best: {sm.HighScore}";
+
+        if (gameOverMessage != null)
+        {
+            gameOverMessage.text = "Selamat! Kamu Menang!";
         }
     }
 
@@ -161,8 +189,14 @@ public class UIManager : MonoBehaviour
 
     public void OnMainMenuButtonPressed()
     {
+        // Pastikan waktu berjalan normal kembali (penting jika game di-pause)
         Time.timeScale = 1f;
-        gameManager?.ShowMenu();
+
+        // Ganti "MainMenu" dengan nama scene menu utamamu yang ada di Build Settings
+        SceneManager.LoadScene("Main Menu"); 
+        
+        // Opsional: Jika kamu punya fungsi di GameManager untuk reset state
+        // gameManager?.ShowMenu(); 
     }
 
     public void OnQuitButtonPressed()

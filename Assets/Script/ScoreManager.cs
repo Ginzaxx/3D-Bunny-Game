@@ -15,23 +15,24 @@ public class ScoreManager : MonoBehaviour
     public TextMeshProUGUI carrotText;  // Menampilkan jumlah wortel
 
     [Header("Weather Thresholds")]
-    // Score 61  -> AfternoonDry
-    // Score 121 -> Snow
-    public int afternoonThreshold = 5;
-    public int snowThreshold = 10;
+    public int afternoonThreshold = 25; // 25 carrots
+    public int snowThreshold = 50;      // 50 carrots
+    public int targetCarrots = 75;
 
-    public int CurrentScore { get; private set; } = 0;
-    public int CarrotCount  { get; private set; } = 0;
+    [field: SerializeField] public int CurrentScore { get; private set; } = 0;
+    [field: SerializeField] public int CarrotCount  { get; private set; } = 0;
 
     private int highScore = 0;
     private const string HIGH_SCORE_KEY = "HighScore";
 
     private WeatherManager weatherManager;
+    private GameManager gameManager;
 
     void Start()
     {
         highScore = PlayerPrefs.GetInt(HIGH_SCORE_KEY, 0);
         weatherManager = FindObjectOfType<WeatherManager>();
+        gameManager = FindObjectOfType<GameManager>();
         ResetScore();
     }
 
@@ -67,31 +68,40 @@ public class ScoreManager : MonoBehaviour
 
     /// <summary>
     /// Tambah atau kurangi jumlah wortel.
-    /// Nilai negatif untuk penalti (misal rubah terlewat: -20).
+    /// Nilai negatif untuk penalti.
     /// </summary>
     public void AddCarrot(int amount)
     {
         CarrotCount += amount;
         if (CarrotCount < 0) CarrotCount = 0;   // tidak bisa minus
         UpdateUI();
+        CheckWinCondition();
+        CheckWeatherThreshold();
+    }
+
+    void CheckWinCondition()
+    {
+        if (CarrotCount >= targetCarrots && gameManager != null && gameManager.CurrentState == GameState.Playing)
+        {
+            gameManager.WinGame();
+        }
     }
 
     // ─── Weather Threshold ────────────────────────────────────────────────────
 
     /// <summary>
-    /// Cek apakah score sudah mencapai threshold pergantian cuaca.
-    /// Dipanggil setiap kali score bertambah.
+    /// Cek apakah jumlah wortel sudah mencapai threshold pergantian cuaca.
     /// </summary>
     void CheckWeatherThreshold()
     {
         if (weatherManager == null) return;
 
-        if (CurrentScore >= snowThreshold)
+        if (CarrotCount >= snowThreshold)
         {
             if (weatherManager.CurrentWeather != WeatherType.Snow)
                 weatherManager.ChangeWeather(WeatherType.Snow);
         }
-        else if (CurrentScore >= afternoonThreshold)
+        else if (CarrotCount >= afternoonThreshold)
         {
             if (weatherManager.CurrentWeather != WeatherType.AfternoonDry)
                 weatherManager.ChangeWeather(WeatherType.AfternoonDry);

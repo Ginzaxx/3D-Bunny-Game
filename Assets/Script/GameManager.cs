@@ -83,12 +83,24 @@ public class GameManager : MonoBehaviour
         uiManager?.ShowHUD();
     }
 
+    public void WinGame()
+    {
+        CurrentState = GameState.GameOver;
+        spawnManager?.StopSpawning();
+        timerManager?.StopTimer();
+        int finalScore = scoreManager != null ? scoreManager.CurrentScore : 0;
+        uiManager?.ShowWin(finalScore);
+        AudioManager.Instance?.PlayWin();
+        Debug.Log($"[GameManager] Game Won! Score: {finalScore}");
+    }
+
     public void GameOver()
     {
         CurrentState = GameState.GameOver;
         spawnManager?.StopSpawning();
         int finalScore = scoreManager != null ? scoreManager.CurrentScore : 0;
         uiManager?.ShowGameOver(finalScore);
+        AudioManager.Instance?.PlayLose();
         Debug.Log($"[GameManager] Game Over! Score: {finalScore}");
     }
 

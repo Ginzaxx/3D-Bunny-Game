@@ -21,7 +21,10 @@ public class SpawnManager : MonoBehaviour
     public float spawnY = 10f;
 
     [Header("Spawn Rate (detik)")]
-    public float baseSpawnRate = 1.2f;
+    public float baseSpawnRate = 1.5f;     // Waktu spawn awal (paling lambat)
+    public float minSpawnRate = 0.7f;      // Waktu spawn tercepat (saat mencapai target)
+    public int targetCarrotsForMaxSpeed = 90; // Target wortel agar kecepatan spawn maksimal
+    [Space]
     public float kitSpawnRate = 20f;
     public float foxSpawnInterval = 8f;    // Siang: jarang
     public float foxSpawnIntervalAfternoon = 4f; // Sore: sering
@@ -30,8 +33,14 @@ public class SpawnManager : MonoBehaviour
     [Range(0, 1)] public float frozenCarrotChance = 0.2f;
     [Range(0, 1)] public float snowCarrotChance = 0.4f; // Salju: wortel salju sering
 
+    [Header("Pooling Settings")]
+    public int foxPoolSize = 5;
+    private List<GameObject> foxPool = new List<GameObject>();
+
     private WeatherManager weatherManager;
     private GameManager gameManager;
+    private ScoreManager scoreManager; // Tambahkan referensi ke ScoreManager
+
     private bool isSpawning = false;
     private Coroutine spawnCoroutine;
     private Coroutine kitCoroutine;
@@ -41,6 +50,38 @@ public class SpawnManager : MonoBehaviour
     {
         weatherManager = FindObjectOfType<WeatherManager>();
         gameManager = FindObjectOfType<GameManager>();
+        scoreManager = FindObjectOfType<ScoreManager>(); // Mencari ScoreManager saat game mulai
+        
+        InitializeFoxPool();
+    }
+
+    void InitializeFoxPool()
+    {
+        if (foxPrefab == null) return;
+        
+        for (int i = 0; i < foxPoolSize; i++)
+        {
+            GameObject obj = Instantiate(foxPrefab);
+            obj.SetActive(false);
+            foxPool.Add(obj);
+        }
+    }
+
+    public GameObject GetFoxFromPool()
+    {
+        foreach (GameObject fox in foxPool)
+        {
+            if (!fox.activeInHierarchy)
+            {
+                return fox;
+            }
+        }
+
+        // Opsional: Expand pool jika semua sedang dipakai
+        GameObject newFox = Instantiate(foxPrefab);
+        newFox.SetActive(false);
+        foxPool.Add(newFox);
+        return newFox;
     }
 
     public void StartSpawning()
@@ -97,19 +138,28 @@ public class SpawnManager : MonoBehaviour
 
     float GetSpawnRate()
     {
-        float rate = baseSpawnRate;
-        if (weatherManager == null) return rate;
+        // 1. Hitung kecepatan dasar berdasarkan progres wortel
+        float currentRate = baseSpawnRate;
 
-        switch (weatherManager.CurrentWeather)
+        if (scoreManager != null)
         {
-            case WeatherType.Snow:
-                rate *= 0.8f; // Salju: spawn lebih cepat
-                break;
-            case WeatherType.AfternoonDry:
-                rate *= 0.9f;
-                break;
+            // Hitung persentase (0.0 sampai 1.0)
+            // Mathf.Clamp01 memastikan nilainya tidak lebih dari 1 (100%) meskipun wortel > 90
+            float progress = Mathf.Clamp01((float)scoreManager.CarrotCount / targetCarrotsForMaxSpeed);
+            
+            // Semakin besar progress, currentRate akan semakin mendekati minSpawnRate (semakin cepat)
+            currentRate = Mathf.Lerp(baseSpawnRate, minSpawnRate, progress);
         }
-        return rate;
+
+        // 2. Modifikasi tambahan dari cuaca
+        if (weatherManager != null)
+        {
+            switch (weatherManager.CurrentWeather)
+            {
+            }
+        }
+
+        return currentRate;
     }
 
     float GetKitSpawnRate()
@@ -165,15 +215,20 @@ public class SpawnManager : MonoBehaviour
 
     void SpawnFox()
     {
-        if (foxPrefab == null) return;
+        GameObject fox = GetFoxFromPool();
+        if (fox == null) return;
 
         // Rubah muncul di posisi random X, tidak jatuh (Y tetap)
         float x = Random.Range(spawnXMin + 2f, spawnXMax - 2f);
         float y = Random.Range(-2f, 3f); // muncul di area tengah layar
         Vector3 spawnPos = new Vector3(x, y, 0f);
 
-        Instantiate(foxPrefab, spawnPos, Quaternion.identity);
-        Debug.Log($"[SpawnManager] Rubah muncul di {spawnPos}");
+        fox.transform.position = spawnPos;
+        fox.transform.rotation = Quaternion.identity;
+        fox.SetActive(true);
+
+        AudioManager.Instance?.PlayFoxAppear();
+        Debug.Log($"[SpawnManager] Rubah (Pooled) muncul di {spawnPos}");
     }
 
     void SpawnKit()

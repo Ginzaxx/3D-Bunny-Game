@@ -29,12 +29,22 @@ public class FoxClickDetector : MonoBehaviour
 
     void Start()
     {
-        timer = clickWindow;
         fallingObject = GetComponent<FallingObject>();
         mainCamera = Camera.main;
+    }
 
+    void OnEnable()
+    {
+        timer = clickWindow;
+        isActive = true;
+        
+        if (countdownCanvas != null) countdownCanvas.SetActive(true);
         if (foxAnimator != null)
+        {
             foxAnimator.SetTrigger("Appear");
+            // Reset other triggers if necessary
+            foxAnimator.ResetTrigger("Caught");
+        }
 
         // Mulai animasi muncul
         StartCoroutine(AppearAnimation());
@@ -118,6 +128,6 @@ public class FoxClickDetector : MonoBehaviour
     IEnumerator DestroyAfterAnimation()
     {
         yield return new WaitForSeconds(0.5f);
-        Destroy(gameObject);
+        gameObject.SetActive(false);
     }
 }
