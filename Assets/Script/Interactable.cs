@@ -14,6 +14,11 @@ public class Interactable : MonoBehaviour
     [SerializeField] private int cookingCounter;
     [SerializeField] private bool finishCooking;
 
+    void Start()
+    {
+        cooking = FindObjectOfType<CookingManager>();
+    }
+
     public void OnInteract()
     {
         Debug.Log("Interacting with " + tag);

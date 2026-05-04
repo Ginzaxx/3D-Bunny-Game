@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class CookingManager : MonoBehaviour
 {
-
     [Header("Cooking Prefab List")]
+    [SerializeField] private GameObject CookingObject;
     [SerializeField] private GameObject RawPrefab;              // Index 1
     [SerializeField] private GameObject ChoppedPrefab;          // Index 2
     [SerializeField] private GameObject GrilledPrefab;          // Index 3
@@ -24,48 +24,42 @@ public class CookingManager : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private ScoreManager scoreManager;
+    [SerializeField] private GameObject kitObject;
 
-    private void UpdateFood()
+    private void UpdateCooking()
     {
-        if (chopped)
+        switch(indexCooking)
         {
-            ;
+            case 0:
+                CookingObject = null;
+                break;
+            case 1:
+                CookingObject = RawPrefab;
+                break;
+            case 2:
+                CookingObject = ChoppedPrefab;
+                break;
+            case 3:
+                CookingObject = GrilledPrefab;
+                break;
+            case 4:
+                CookingObject = ChoppedGrilledPrefab;
+                break;
+            case 5:
+                CookingObject = BoiledPrefab;
+                break;
+            case 6:
+                CookingObject = ChoppedBoiledPrefab;
+                break;
+            case 7:
+                CookingObject = GrilledBoiledPrefab;
+                break;
+            case 8:
+                CookingObject = FullyCookedPrefab;
+                break;
         }
-        else
-        {
-            ;
-        }
-    }
 
-    public void SetIndexRequest()
-    {
-        indexRequest = Random.Range(1, 8);
-    }
-
-    public void TakeRequest()
-    {
-        hasRequest = true;
-    }
-
-    public void FinishRequest()
-    {
-        if (indexRequest == indexCooking)
-            scoreManager.AddScore(50);
-        else
-            scoreManager.AddScore(-25);
-
-        hasRequest = false;
-        indexRequest = 0;
-        indexCooking = 0;
-
-        chopped = false;
-        grilled = false;
-        boiled = false;
-    }
-
-    public void StartCooking()
-    {
-        isCooking = true;
+        Debug.Log("[CookingManager] New Cooking Index : " + indexCooking);
     }
 
     public void SetIndexCooking(string method)
@@ -85,11 +79,64 @@ public class CookingManager : MonoBehaviour
             indexCooking += 4;
             break;
         }
+
+        UpdateCooking();
+    }
+
+    public void StartCooking()
+    {
+        isCooking = true;
     }
 
     public void TakeCooking()
     {
         isCooking = false;
+    }
+
+    public void SetRequest()
+    {
+        if (kitObject != null && !kitObject.activeSelf)
+            kitObject.SetActive(true);
+
+        indexRequest = Random.Range(1, 8);
+        indexCooking = 1;
+
+        Debug.Log("[CookingManager] Request Index : " + indexRequest);
+    }
+
+    public void ResetRequest()
+    {
+        if (kitObject != null && kitObject.activeSelf)
+            kitObject.SetActive(false);
+
+        if (indexRequest == indexCooking)
+            scoreManager.AddScore(50);
+        else
+            scoreManager.AddScore(-25);
+        
+        hasRequest = false;
+        isCooking = false;
+
+        indexRequest = 0;
+        indexCooking = 0;
+
+        chopped = false;
+        grilled = false;
+        boiled = false;
+
+        UpdateCooking();
+    }
+
+    public void TakeRequest()
+    {
+        hasRequest = true;
+    }
+
+    public void FinishRequest()
+    {
+        hasRequest = false;
+
+        ResetRequest();
     }
 
     public int G_IndexRequest => indexRequest;

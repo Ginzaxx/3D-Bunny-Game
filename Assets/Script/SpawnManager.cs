@@ -12,7 +12,6 @@ public class SpawnManager : MonoBehaviour
     [Header("Prefabs")]
     public GameObject carrotNormalPrefab;
     public GameObject carrotFrozenPrefab;
-    public GameObject kitObject;
     public GameObject foxPrefab;
 
     [Header("Spawn Area")]
@@ -118,7 +117,9 @@ public class SpawnManager : MonoBehaviour
         {
             float rate = GetKitSpawnRate();
             yield return new WaitForSeconds(rate);
+            DespawnKit();
 
+            yield return new WaitForSeconds(5f);
             SpawnKit();
         }
     }
@@ -226,11 +227,15 @@ public class SpawnManager : MonoBehaviour
 
     void SpawnKit()
     {
-        if (kitObject == null) return;
-
-        kitObject.SetActive(true);
-        cookingManager.SetIndexRequest();
+        cookingManager.SetRequest();
 
         Debug.Log("[SpawnManager] Kit has spawned");
+    }
+
+    void DespawnKit()
+    {
+        cookingManager.ResetRequest();
+
+        Debug.Log("[SpawnManager] Kit has despawned");
     }
 }
