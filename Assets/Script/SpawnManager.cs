@@ -39,7 +39,8 @@ public class SpawnManager : MonoBehaviour
 
     private WeatherManager weatherManager;
     private GameManager gameManager;
-    private ScoreManager scoreManager; // Tambahkan referensi ke ScoreManager
+    private ScoreManager scoreManager;
+    private CookingManager cookingManager;
 
     private bool isSpawning = false;
     private Coroutine spawnCoroutine;
@@ -50,7 +51,8 @@ public class SpawnManager : MonoBehaviour
     {
         weatherManager = FindObjectOfType<WeatherManager>();
         gameManager = FindObjectOfType<GameManager>();
-        scoreManager = FindObjectOfType<ScoreManager>(); // Mencari ScoreManager saat game mulai
+        scoreManager = FindObjectOfType<ScoreManager>();
+        cookingManager = FindObjectOfType<CookingManager>();
         
         InitializeFoxPool();
     }
@@ -138,7 +140,6 @@ public class SpawnManager : MonoBehaviour
 
     float GetSpawnRate()
     {
-        // 1. Hitung kecepatan dasar berdasarkan progres wortel
         float currentRate = baseSpawnRate;
 
         if (scoreManager != null)
@@ -149,14 +150,6 @@ public class SpawnManager : MonoBehaviour
             
             // Semakin besar progress, currentRate akan semakin mendekati minSpawnRate (semakin cepat)
             currentRate = Mathf.Lerp(baseSpawnRate, minSpawnRate, progress);
-        }
-
-        // 2. Modifikasi tambahan dari cuaca
-        if (weatherManager != null)
-        {
-            switch (weatherManager.CurrentWeather)
-            {
-            }
         }
 
         return currentRate;
@@ -233,14 +226,11 @@ public class SpawnManager : MonoBehaviour
 
     void SpawnKit()
     {
-        if (foxPrefab == null) return;
+        if (kitObject == null) return;
 
-        // Rubah muncul di posisi random X, tidak jatuh (Y tetap)
-        float x = Random.Range(spawnXMin + 2f, spawnXMax - 2f);
-        float y = Random.Range(-2f, 3f); // muncul di area tengah layar
-        Vector3 spawnPos = new Vector3(x, y, 0f);
+        kitObject.SetActive(true);
+        cookingManager.SetIndexRequest();
 
-        Instantiate(foxPrefab, spawnPos, Quaternion.identity);
-        Debug.Log($"[SpawnManager] Rubah muncul di {spawnPos}");
+        Debug.Log("[SpawnManager] Kit has spawned");
     }
 }
