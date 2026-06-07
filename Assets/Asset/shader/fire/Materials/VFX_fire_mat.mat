@@ -121,8 +121,8 @@ Material:
     - _DstBlend: 0
     - _DstBlendAlpha: 0
     - _EnvironmentReflections: 1
-    - _FireDetail: 12.29
-    - _FirePower: 0.633
+    - _FireDetail: 10.9
+    - _FirePower: 0.51
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
@@ -142,7 +142,7 @@ Material:
     - _UpNode: 0.5
     - _WorkflowMode: 1
     - _ZWrite: 1
-    - _fireThreshold: -0.5
+    - _fireThreshold: 0
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
