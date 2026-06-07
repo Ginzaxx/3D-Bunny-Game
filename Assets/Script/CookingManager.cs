@@ -1,33 +1,109 @@
+using System.Collections;
+using TMPro;
 using UnityEngine;
+
+public enum CookStage
+{
+    Raw,
+    Boiled,
+    Grilled,
+    Chopped
+}
 
 public class CookingManager : MonoBehaviour
 {
     [Header("Cooking Prefab List")]
     [SerializeField] private GameObject CookingObject;
-    [SerializeField] private GameObject RawPrefab;              // Index 1
-    [SerializeField] private GameObject ChoppedPrefab;          // Index 2
-    [SerializeField] private GameObject GrilledPrefab;          // Index 3
-    [SerializeField] private GameObject ChoppedGrilledPrefab;   // Index 4
-    [SerializeField] private GameObject BoiledPrefab;           // Index 5
-    [SerializeField] private GameObject ChoppedBoiledPrefab;    // Index 6
-    [SerializeField] private GameObject GrilledBoiledPrefab;    // Index 7
-    [SerializeField] private GameObject FullyCookedPrefab;      // Index 8
+    [SerializeField] private GameObject RawPrefab;      // Index 1
+    [SerializeField] private GameObject ChoppedPrefab;  // Index 2
+    [SerializeField] private GameObject GrilledPrefab;  // Index 3
+    [SerializeField] private GameObject BoiledPrefab;   // Index 4
+    [SerializeField] private TextMeshProUGUI indexText;
 
     [Header("Food Variables")]
     [SerializeField] private int indexRequest;
     [SerializeField] private int indexCooking;
     [SerializeField] private bool hasRequest;
     [SerializeField] private bool isCooking;
-    [SerializeField] private bool boiled = false;
-    [SerializeField] private bool chopped = false;
-    [SerializeField] private bool grilled = false;
+    [SerializeField] private bool isCooked;
+    [SerializeField] private CookStage cookStage;
 
     [Header("References")]
+    [SerializeField] private WeatherManager weatherManager;
     [SerializeField] private ScoreManager scoreManager;
     [SerializeField] private GameObject kitObject;
 
+    [Header("Spawn Rate (detik)")]
+    public float kitSpawnRate = 20f;
+    private bool isSpawning = false;
+    private Coroutine kitCoroutine;
+
+    void Start()
+    {
+        scoreManager = FindObjectOfType<ScoreManager>();
+        weatherManager = FindObjectOfType<WeatherManager>();
+    }
+
+    public void StartSpawning()
+    {
+        isSpawning = true;
+        kitCoroutine = StartCoroutine(KitSpawnLoop());
+    }
+
+    public void StopSpawning()
+    {
+        isSpawning = false;
+        if (kitCoroutine != null) StopCoroutine(kitCoroutine);
+    }
+
+    IEnumerator KitSpawnLoop()
+    {
+        while (isSpawning)
+        {
+            float rate = GetKitSpawnRate();
+            yield return new WaitForSeconds(rate);
+            DespawnKit();
+
+            yield return new WaitForSeconds(5f);
+            SpawnKit();
+        }
+    }
+
+    float GetKitSpawnRate()
+    {
+        float rate = kitSpawnRate;
+        if (weatherManager == null) return rate;
+
+        switch (weatherManager.CurrentWeather)
+        {
+            case WeatherType.Snow:
+                rate *= 0.6f;
+                break;
+            case WeatherType.AfternoonDry:
+                rate *= 0.8f;
+                break;
+        }
+        return rate;
+    }
+
+    void SpawnKit()
+    {
+        SetRequest();
+
+        Debug.Log("[SpawnManager] Kit has spawned");
+    }
+
+    void DespawnKit()
+    {
+        ResetRequest();
+
+        Debug.Log("[SpawnManager] Kit has despawned");
+    }
+
     private void UpdateCooking()
     {
+        if (CookingObject == null) return;
+
         switch(indexCooking)
         {
             case 0:
@@ -43,21 +119,11 @@ public class CookingManager : MonoBehaviour
                 CookingObject = GrilledPrefab;
                 break;
             case 4:
-                CookingObject = ChoppedGrilledPrefab;
-                break;
-            case 5:
                 CookingObject = BoiledPrefab;
                 break;
-            case 6:
-                CookingObject = ChoppedBoiledPrefab;
-                break;
-            case 7:
-                CookingObject = GrilledBoiledPrefab;
-                break;
-            case 8:
-                CookingObject = FullyCookedPrefab;
-                break;
         }
+
+        indexText.text = $"{indexCooking}";
 
         Debug.Log("[CookingManager] New Cooking Index : " + indexCooking);
     }
@@ -67,16 +133,16 @@ public class CookingManager : MonoBehaviour
         switch (method)
         {
         case "Board":
-            chopped = true;
-            indexCooking += 1;
+            cookStage = CookStage.Chopped;
+            indexCooking = 2;
             break;
         case "Grill":
-            grilled = true;
-            indexCooking += 2;
+            cookStage = CookStage.Grilled;
+            indexCooking = 3;
             break;
         case "Pot":
-            boiled = true;
-            indexCooking += 4;
+            cookStage = CookStage.Boiled;
+            indexCooking = 4;
             break;
         }
 
@@ -86,6 +152,7 @@ public class CookingManager : MonoBehaviour
     public void StartCooking()
     {
         isCooking = true;
+        isCooked = true;
     }
 
     public void TakeCooking()
@@ -98,8 +165,9 @@ public class CookingManager : MonoBehaviour
         if (kitObject != null && !kitObject.activeSelf)
             kitObject.SetActive(true);
 
-        indexRequest = Random.Range(1, 8);
+        indexRequest = Random.Range(2, 4);
         indexCooking = 1;
+        isCooked = false;
 
         Debug.Log("[CookingManager] Request Index : " + indexRequest);
     }
@@ -113,16 +181,9 @@ public class CookingManager : MonoBehaviour
             scoreManager.AddScore(50);
         else
             scoreManager.AddScore(-25);
-        
-        hasRequest = false;
-        isCooking = false;
 
         indexRequest = 0;
         indexCooking = 0;
-
-        chopped = false;
-        grilled = false;
-        boiled = false;
 
         UpdateCooking();
     }
@@ -143,7 +204,5 @@ public class CookingManager : MonoBehaviour
     public int G_IndexCooking => indexCooking;
     public bool G_HasRequest => hasRequest;
     public bool G_IsCooking => isCooking;
-    public bool IsChopped => chopped;
-    public bool IsGrilled => grilled;
-    public bool IsBoiled => boiled;
+    public bool G_IsCooked => isCooked;
 }

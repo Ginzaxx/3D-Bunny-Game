@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour
     public SpawnManager spawnManager;
     public ScoreManager scoreManager;
     public WeatherManager weatherManager;
+    public CookingManager cookingManager;
     public UIManager uiManager;
 
     [Header("Camera")]
@@ -60,6 +61,7 @@ public class GameManager : MonoBehaviour
         timerManager?.ResetTimer();
         timerManager?.StartTimer();
         spawnManager?.StartSpawning();
+        cookingManager?.StartSpawning();
         cameraController?.SetGameplayCamera();
         uiManager?.ShowHUD();
         ClearAllFallingObjects();
@@ -86,8 +88,9 @@ public class GameManager : MonoBehaviour
     public void WinGame()
     {
         CurrentState = GameState.GameOver;
-        spawnManager?.StopSpawning();
         timerManager?.StopTimer();
+        spawnManager?.StopSpawning();
+        cookingManager?.StopSpawning();
         int finalScore = scoreManager != null ? scoreManager.CurrentScore : 0;
         uiManager?.ShowWin(finalScore);
         AudioManager.Instance?.PlayWin();
@@ -98,6 +101,7 @@ public class GameManager : MonoBehaviour
     {
         CurrentState = GameState.GameOver;
         spawnManager?.StopSpawning();
+        cookingManager?.StopSpawning();
         int finalScore = scoreManager != null ? scoreManager.CurrentScore : 0;
         uiManager?.ShowGameOver(finalScore);
         AudioManager.Instance?.PlayLose();

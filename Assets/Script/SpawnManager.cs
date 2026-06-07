@@ -24,7 +24,6 @@ public class SpawnManager : MonoBehaviour
     public float minSpawnRate = 0.7f;      // Waktu spawn tercepat (saat mencapai target)
     public int targetCarrotsForMaxSpeed = 90; // Target wortel agar kecepatan spawn maksimal
     [Space]
-    public float kitSpawnRate = 20f;
     public float foxSpawnInterval = 8f;    // Siang: jarang
     public float foxSpawnIntervalAfternoon = 4f; // Sore: sering
 
@@ -37,21 +36,16 @@ public class SpawnManager : MonoBehaviour
     private List<GameObject> foxPool = new List<GameObject>();
 
     private WeatherManager weatherManager;
-    private GameManager gameManager;
     private ScoreManager scoreManager;
-    private CookingManager cookingManager;
 
     private bool isSpawning = false;
     private Coroutine spawnCoroutine;
-    private Coroutine kitCoroutine;
     private Coroutine foxCoroutine;
 
     void Start()
     {
         weatherManager = FindObjectOfType<WeatherManager>();
-        gameManager = FindObjectOfType<GameManager>();
         scoreManager = FindObjectOfType<ScoreManager>();
-        cookingManager = FindObjectOfType<CookingManager>();
         
         InitializeFoxPool();
     }
@@ -89,7 +83,6 @@ public class SpawnManager : MonoBehaviour
     {
         isSpawning = true;
         spawnCoroutine = StartCoroutine(SpawnLoop());
-        kitCoroutine = StartCoroutine(KitSpawnLoop());
         foxCoroutine = StartCoroutine(FoxSpawnLoop());
     }
 
@@ -97,7 +90,6 @@ public class SpawnManager : MonoBehaviour
     {
         isSpawning = false;
         if (spawnCoroutine != null) StopCoroutine(spawnCoroutine);
-        if (kitCoroutine != null) StopCoroutine(kitCoroutine);
         if (foxCoroutine != null) StopCoroutine(foxCoroutine);
     }
 
@@ -108,19 +100,6 @@ public class SpawnManager : MonoBehaviour
             float rate = GetSpawnRate();
             yield return new WaitForSeconds(rate);
             SpawnCarrot();
-        }
-    }
-
-    IEnumerator KitSpawnLoop()
-    {
-        while (isSpawning)
-        {
-            float rate = GetKitSpawnRate();
-            yield return new WaitForSeconds(rate);
-            DespawnKit();
-
-            yield return new WaitForSeconds(5f);
-            SpawnKit();
         }
     }
 
@@ -154,23 +133,6 @@ public class SpawnManager : MonoBehaviour
         }
 
         return currentRate;
-    }
-
-    float GetKitSpawnRate()
-    {
-        float rate = kitSpawnRate;
-        if (weatherManager == null) return rate;
-
-        switch (weatherManager.CurrentWeather)
-        {
-            case WeatherType.Snow:
-                rate *= 0.6f;
-                break;
-            case WeatherType.AfternoonDry:
-                rate *= 0.8f;
-                break;
-        }
-        return rate;
     }
 
     float GetFoxInterval()
@@ -223,19 +185,5 @@ public class SpawnManager : MonoBehaviour
 
         AudioManager.Instance?.PlayFoxAppear();
         Debug.Log($"[SpawnManager] Rubah (Pooled) muncul di {spawnPos}");
-    }
-
-    void SpawnKit()
-    {
-        cookingManager.SetRequest();
-
-        Debug.Log("[SpawnManager] Kit has spawned");
-    }
-
-    void DespawnKit()
-    {
-        cookingManager.ResetRequest();
-
-        Debug.Log("[SpawnManager] Kit has despawned");
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 
 public class Interactable : MonoBehaviour
@@ -7,6 +8,7 @@ public class Interactable : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private GameObject interactIcon;
+    [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private CookingManager cooking;
 
     [Header("Cooking Parameters")]
@@ -59,21 +61,9 @@ public class Interactable : MonoBehaviour
 
         if (!cooking.G_IsCooking)
         {
-            if (CompareTag("Board") && cooking.IsChopped)
+            if (cooking.G_IsCooked)
             {
-                Debug.Log("[Interactable] Food is already Chopped");
-                return;
-            }
-
-            if (CompareTag("Board") && cooking.IsGrilled)
-            {
-                Debug.Log("[Interactable] Food is already Grilled");
-                return;
-            }
-
-            if (CompareTag("Board") && cooking.IsBoiled)
-            {
-                Debug.Log("[Interactable] Food is already Boiled");
+                Debug.Log("[Interactable] Food is already Cooked");
                 return;
             }
 
