@@ -26,7 +26,6 @@ public class CookingManager : MonoBehaviour
     [SerializeField] private bool hasRequest;
     [SerializeField] private bool isCooking;
     [SerializeField] private bool isCooked;
-    [SerializeField] private CookStage cookStage;
 
     [Header("References")]
     [SerializeField] private WeatherManager weatherManager;
@@ -34,9 +33,9 @@ public class CookingManager : MonoBehaviour
     [SerializeField] private GameObject kitObject;
 
     [Header("Spawn Rate (detik)")]
-    public float kitSpawnRate = 20f;
-    private bool isSpawning = false;
-    private Coroutine kitCoroutine;
+    [SerializeField] private float kitSpawnRate = 20f;
+    [SerializeField] private bool isSpawning = false;
+    [SerializeField] private Coroutine kitCoroutine;
 
     void Start()
     {
@@ -61,11 +60,12 @@ public class CookingManager : MonoBehaviour
         while (isSpawning)
         {
             float rate = GetKitSpawnRate();
-            yield return new WaitForSeconds(rate);
-            DespawnKit();
 
             yield return new WaitForSeconds(5f);
             SpawnKit();
+
+            yield return new WaitForSeconds(20f);
+            DespawnKit();
         }
     }
 
@@ -133,15 +133,12 @@ public class CookingManager : MonoBehaviour
         switch (method)
         {
         case "Board":
-            cookStage = CookStage.Chopped;
             indexCooking = 2;
             break;
         case "Grill":
-            cookStage = CookStage.Grilled;
             indexCooking = 3;
             break;
         case "Pot":
-            cookStage = CookStage.Boiled;
             indexCooking = 4;
             break;
         }
@@ -155,9 +152,23 @@ public class CookingManager : MonoBehaviour
         isCooked = true;
     }
 
-    public void TakeCooking()
+    public void FinishCooking()
     {
         isCooking = false;
+    }
+
+    public void StartRequest()
+    {
+        hasRequest = true;
+
+        UpdateCooking();
+    }
+
+    public void FinishRequest()
+    {
+        hasRequest = false;
+
+        ResetRequest();
     }
 
     public void SetRequest()
@@ -186,18 +197,6 @@ public class CookingManager : MonoBehaviour
         indexCooking = 0;
 
         UpdateCooking();
-    }
-
-    public void TakeRequest()
-    {
-        hasRequest = true;
-    }
-
-    public void FinishRequest()
-    {
-        hasRequest = false;
-
-        ResetRequest();
     }
 
     public int G_IndexRequest => indexRequest;

@@ -53,7 +53,7 @@ public class PlayerController : MonoBehaviour
         else if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
             input = 1f;
 
-        if (Input.GetKey(KeyCode.E) && interactGO != null)
+        if (Input.GetKeyDown(KeyCode.E) && interactGO != null)
             interactGO.OnInteract();
 
         if (Input.touchCount > 0)
