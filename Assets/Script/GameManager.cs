@@ -1,6 +1,10 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 public enum GameState
 {
     Menu,
@@ -13,7 +17,7 @@ public enum GameState
 /// GameManager - Singleton mengatur state game keseluruhan
 /// Attach ke GameObject GameManager
 /// </summary>
-public class GameManager : MonoBehaviour
+public class GameManager : MonoBehaviour, ISerializationCallbackReceiver
 {
     public static GameManager Instance { get; private set; }
 
@@ -28,19 +32,37 @@ public class GameManager : MonoBehaviour
     [Header("Camera")]
     public CameraController cameraController;
 
+    [Header("Next Level Scene (Drag dari Inspector)")]
+#if UNITY_EDITOR
+    [SerializeField] private SceneAsset sceneToLoad;
+#endif
+
+    [HideInInspector]
+    [SerializeField] private string sceneName;
+
     public GameState CurrentState { get; private set; } = GameState.Menu;
 
-    void Awake()
+    public void OnBeforeSerialize()
     {
-        if (Instance == null)
+#if UNITY_EDITOR
+        if (sceneToLoad != null)
         {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
+            sceneName = sceneToLoad.name;
         }
         else
         {
-            Destroy(gameObject);
+            sceneName = null;
         }
+#endif
+    }
+
+    public void OnAfterDeserialize()
+    {
+    }
+
+    void Awake()
+    {
+        Instance = this;
     }
 
     void Start()
@@ -95,6 +117,22 @@ public class GameManager : MonoBehaviour
         uiManager?.ShowWin(finalScore);
         AudioManager.Instance?.PlayWin();
         Debug.Log($"[GameManager] Game Won! Score: {finalScore}");
+
+        if (!string.IsNullOrEmpty(sceneName))
+        {
+            StartCoroutine(LoadNextLevelAfterDelay(3f));
+        }
+        else
+        {
+            Debug.LogWarning("Scene berikutnya belum di-assign di GameManager Inspector!");
+        }
+    }
+
+    private System.Collections.IEnumerator LoadNextLevelAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(sceneName);
     }
 
     public void GameOver()

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using UnityEditor;
 #endif
 
-public class MainMenu : MonoBehaviour
+public class MainMenu : MonoBehaviour, ISerializationCallbackReceiver
 {
     [Header("Button References")]
     [SerializeField] private Button startButton;
@@ -17,7 +17,26 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private SceneAsset sceneToLoad;
 #endif
 
-    private string sceneName;
+    [HideInInspector]
+    [SerializeField] private string sceneName;
+
+    public void OnBeforeSerialize()
+    {
+#if UNITY_EDITOR
+        if (sceneToLoad != null)
+        {
+            sceneName = sceneToLoad.name;
+        }
+        else
+        {
+            sceneName = null;
+        }
+#endif
+    }
+
+    public void OnAfterDeserialize()
+    {
+    }
 
     private void Awake()
     {
