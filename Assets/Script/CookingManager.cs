@@ -1,155 +1,90 @@
 using System.Collections;
-using TMPro;
 using UnityEngine;
 
 public enum CookStage
 {
-    Raw,
-    Boiled,
+    Request,
+    Chopped,
     Grilled,
-    Chopped
+    Boiled
 }
 
 public class CookingManager : MonoBehaviour
 {
-    [Header("Cooking Prefab List")]
-    [SerializeField] private GameObject CookingObject;
-    [SerializeField] private GameObject RawPrefab;      // Index 1
-    [SerializeField] private GameObject ChoppedPrefab;  // Index 2
-    [SerializeField] private GameObject GrilledPrefab;  // Index 3
-    [SerializeField] private GameObject BoiledPrefab;   // Index 4
-    [SerializeField] private TextMeshProUGUI indexText;
+    [Header("Cooking Objects")]
+    [SerializeField] private GameObject[] requestObjects;
+    [SerializeField] private GameObject[] cookingObjects;
 
     [Header("Food Variables")]
-    [SerializeField] private int indexRequest;
-    [SerializeField] private int indexCooking;
+    [SerializeField] private int requestIndex;
+    [SerializeField] private int cookingIndex;
     [SerializeField] private bool hasRequest;
+    [SerializeField] private bool hasCooked;
     [SerializeField] private bool isCooking;
-    [SerializeField] private bool isCooked;
 
     [Header("References")]
-    [SerializeField] private WeatherManager weatherManager;
     [SerializeField] private ScoreManager scoreManager;
+    [SerializeField] private TimerManager timerManager;
     [SerializeField] private GameObject kitObject;
 
-    [Header("Spawn Rate (detik)")]
+    [Header("Spawn Rate")]
     [SerializeField] private float kitSpawnRate = 20f;
-    [SerializeField] private bool isSpawning = false;
-    [SerializeField] private Coroutine kitCoroutine;
+    [SerializeField] private float kitDespawnRate = 5f;
+    [SerializeField] private bool isSpawning;
+    [SerializeField] private int spawnCycle;
 
-    void Start()
+    private void Start()
     {
-        scoreManager = FindObjectOfType<ScoreManager>();
-        weatherManager = FindObjectOfType<WeatherManager>();
+        if (scoreManager == null) scoreManager = FindObjectOfType<ScoreManager>();
+        if (timerManager == null) timerManager = FindObjectOfType<TimerManager>();
+
+        foreach (var obj in requestObjects)
+            obj.SetActive(false);
+        foreach (var obj in cookingObjects)
+            obj.SetActive(false);
+        kitObject.SetActive(false);
     }
 
     public void StartSpawning()
     {
         isSpawning = true;
-        kitCoroutine = StartCoroutine(KitSpawnLoop());
+        StartCoroutine(DespawnKit());
     }
 
     public void StopSpawning()
     {
         isSpawning = false;
-        if (kitCoroutine != null) StopCoroutine(kitCoroutine);
     }
 
-    IEnumerator KitSpawnLoop()
+    private IEnumerator SpawnKit()
     {
-        while (isSpawning)
-        {
-            float rate = GetKitSpawnRate();
-
-            yield return new WaitForSeconds(5f);
-            SpawnKit();
-
-            yield return new WaitForSeconds(20f);
-            DespawnKit();
-        }
-    }
-
-    float GetKitSpawnRate()
-    {
-        float rate = kitSpawnRate;
-        if (weatherManager == null) return rate;
-
-        switch (weatherManager.CurrentWeather)
-        {
-            case WeatherType.Snow:
-                rate *= 0.6f;
-                break;
-            case WeatherType.AfternoonDry:
-                rate *= 0.8f;
-                break;
-        }
-        return rate;
-    }
-
-    void SpawnKit()
-    {
+        int spawnCycleKit = spawnCycle;
         SetRequest();
-
-        Debug.Log("[SpawnManager] Kit has spawned");
+        Debug.Log("[CookingManager] Kit has spawned");
+        yield return new WaitForSeconds(kitSpawnRate);
+        if (spawnCycle == spawnCycleKit) StartCoroutine(DespawnKit());
     }
 
-    void DespawnKit()
+    private IEnumerator DespawnKit()
     {
+        spawnCycle += 1;
         ResetRequest();
-
-        Debug.Log("[SpawnManager] Kit has despawned");
+        Debug.Log("[CookingManager] Kit has despawned");
+        yield return new WaitForSeconds(kitDespawnRate);
+        if (isSpawning) StartCoroutine(SpawnKit());
     }
 
-    private void UpdateCooking()
+    public void StartRequest()
     {
-        if (CookingObject == null) return;
-
-        switch(indexCooking)
-        {
-            case 0:
-                CookingObject = null;
-                break;
-            case 1:
-                CookingObject = RawPrefab;
-                break;
-            case 2:
-                CookingObject = ChoppedPrefab;
-                break;
-            case 3:
-                CookingObject = GrilledPrefab;
-                break;
-            case 4:
-                CookingObject = BoiledPrefab;
-                break;
-        }
-
-        indexText.text = $"{indexCooking}";
-
-        Debug.Log("[CookingManager] New Cooking Index : " + indexCooking);
-    }
-
-    public void SetIndexCooking(string method)
-    {
-        switch (method)
-        {
-        case "Board":
-            indexCooking = 2;
-            break;
-        case "Grill":
-            indexCooking = 3;
-            break;
-        case "Pot":
-            indexCooking = 4;
-            break;
-        }
-
-        UpdateCooking();
+        hasRequest = true;
+        cookingObjects[0].SetActive(true);
     }
 
     public void StartCooking()
     {
         isCooking = true;
-        isCooked = true;
+        hasCooked = true;
+        cookingObjects[0].SetActive(false);
     }
 
     public void FinishCooking()
@@ -157,57 +92,57 @@ public class CookingManager : MonoBehaviour
         isCooking = false;
     }
 
-    public void StartRequest()
-    {
-        hasRequest = true;
-
-        UpdateCooking();
-    }
-
     public void FinishRequest()
     {
         hasRequest = false;
-
-        ResetRequest();
+        hasCooked = false;
+        StartCoroutine(DespawnKit());
     }
 
-    public void SetRequest()
+    public void SetIndexCooking(CookStage stage)
     {
-        if (kitObject != null && !kitObject.activeSelf)
-            kitObject.SetActive(true);
-
-        indexRequest = Random.Range(2, 4);
-        indexCooking = 1;
-        isCooked = false;
-
-        Debug.Log("[CookingManager] Request Index : " + indexRequest);
+        cookingIndex = (int)stage;
+        cookingObjects[cookingIndex].SetActive(true);
+        Debug.Log($"[CookingManager] Cooking Index : {cookingIndex}");
     }
 
-    public void ResetRequest()
+    private void SetRequest()
     {
-        if (kitObject != null && kitObject.activeSelf)
-            kitObject.SetActive(false);
+        kitObject.SetActive(true);
 
-        if (indexRequest == indexCooking)
+        cookingIndex = 0;
+        requestIndex = Random.Range(1, 4);
+        requestObjects[requestIndex].SetActive(true);
+        Debug.Log($"[CookingManager] Request Index : {requestIndex}");
+    }
+
+    private void ResetRequest()
+    {
+        kitObject.SetActive(false);
+
+        if (requestIndex == cookingIndex)
         {
+            timerManager.AddTime(10);
             scoreManager.AddScore(20);
             scoreManager.AddCarrot(10);
         }
         else
         {
+            timerManager.AddTime(-5);
             scoreManager.AddScore(-10);
             scoreManager.AddCarrot(-5);
         }
 
-        indexRequest = 0;
-        indexCooking = 0;
-
-        UpdateCooking();
+        Debug.Log($"[CookingManager] Reset Request");
+        requestObjects[requestIndex].SetActive(false);
+        cookingObjects[cookingIndex].SetActive(false);
+        requestIndex = -1;
+        cookingIndex = -1;
     }
 
-    public int G_IndexRequest => indexRequest;
-    public int G_IndexCooking => indexCooking;
+    public int G_IndexRequest => requestIndex;
+    public int G_IndexCooking => cookingIndex;
     public bool G_HasRequest => hasRequest;
+    public bool G_HasCooked => hasCooked;
     public bool G_IsCooking => isCooking;
-    public bool G_IsCooked => isCooked;
 }

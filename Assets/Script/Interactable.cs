@@ -8,36 +8,39 @@ public class Interactable : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private GameObject interactIcon;
-    [SerializeField] private TextMeshProUGUI timerText;
+    [SerializeField] private GameObject timerIcon;
+    [SerializeField] private GameObject timerNeedle;
     [SerializeField] private CookingManager cooking;
+    [SerializeField] private CookStage stage;
 
     [Header("Cooking Parameters")]
-    [SerializeField] private int cookingTimer = 5;
-    [SerializeField] private int cookingCounter;
+    [SerializeField] private float cookingTimer = 5;
+    [SerializeField] private float cookingCounter;
     [SerializeField] private bool finishCooking;
 
     void Start()
     {
+        if (interactIcon != null && interactIcon.activeSelf)
+            interactIcon.SetActive(false);
+        if (timerIcon != null && timerIcon.activeSelf)
+            timerIcon.SetActive(false);
+
         cooking = FindObjectOfType<CookingManager>();
     }
 
     public void OnInteract()
     {
-        Debug.Log("[Interactable] Interacting with " + tag);
+        Debug.Log($"[Interactable] Interacting with {stage} Object");
 
-        switch(tag)
+        switch(stage)
         {
-        case "Board":
-            HandleCooking();
-            break;
-        case "Grill":
-            HandleCooking();
-            break;
-        case "Pot":
-            HandleCooking();
-            break;
-        case "Kit":
+        case CookStage.Request:
             HandleRequest();
+            break;
+        case CookStage.Chopped:
+        case CookStage.Grilled:
+        case CookStage.Boiled:
+            HandleCooking();
             break;
         }
     }
@@ -45,66 +48,17 @@ public class Interactable : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (!other.CompareTag("Player")) return;
-
-        if (interactIcon != null && !interactIcon.activeSelf)
-            interactIcon.SetActive(true);
-
-        if (timerText != null && !timerText.gameObject.activeSelf)
-            timerText.gameObject.SetActive(true);
+        if (interactIcon == null || interactIcon.activeSelf) return;
+        if (stage != CookStage.Request && (cooking.G_IsCooking || !cooking.G_HasRequest)) return;
+        interactIcon.SetActive(true);
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (!other.CompareTag("Player")) return;
-
-        if (interactIcon != null && interactIcon.activeSelf)
-            interactIcon.SetActive(false);
-
-        if (timerText != null && timerText.gameObject.activeSelf)
-            timerText.gameObject.SetActive(false);
-    }
-
-    private void HandleCooking()
-    {
-        if (cooking == null) return;
-        if (!cooking.G_HasRequest) return;
-
-        if (!cooking.G_IsCooking || !cooking.G_IsCooked)
-        {
-            Debug.Log("[Interactable] Started Cooking");
-
-            cooking.StartCooking();
-            StartCoroutine(CookingRoutine());
-        }
-        else if (finishCooking)
-        {
-            Debug.Log("[Interactable] Finished Cooking");
-
-            cooking.FinishCooking();
-            finishCooking = false;
-        }
-        else
-        {
-            Debug.Log("[Interactable] Unable to Perform Cooking");
-        }
-    }
-
-    IEnumerator CookingRoutine()
-    {
-        cookingCounter = cookingTimer;
-
-        while (cookingCounter > 0)
-        {
-            yield return _waitForSeconds1;
-            cookingCounter -= 1;
-            timerText.text = $"{cookingCounter}";
-        }
-
-        finishCooking = true;
-        timerText.text = "";
-        cooking.SetIndexCooking(tag);
-
-        Debug.Log("[Interactable] Finished Cooking with New Cooking Index " + cooking.G_IndexCooking);
+        if (interactIcon == null || !interactIcon.activeSelf) return;
+        if (stage != CookStage.Request && (cooking.G_IsCooking || !cooking.G_HasRequest)) return;
+        interactIcon.SetActive(false);
     }
 
     private void HandleRequest()
@@ -113,13 +67,60 @@ public class Interactable : MonoBehaviour
 
         if (!cooking.G_HasRequest)
         {
-            Debug.Log("[Interactable] Taken Request");
+            Debug.Log("[Interactable] Started Request");
             cooking.StartRequest();
         }
-        else
+        else if (!cooking.G_IsCooking)
         {
             Debug.Log("[Interactable] Finished Request");
             cooking.FinishRequest();
         }
+        else
+        {
+            Debug.Log("[Interactable] Unable to Finish Request");
+        }
+    }
+
+    private void HandleCooking()
+    {
+        if (cooking == null) return;
+        if (!cooking.G_HasRequest) return;
+
+        if (!cooking.G_HasCooked)
+        {
+            Debug.Log("[Interactable] Started Cooking");
+            cooking.StartCooking();
+            StartCoroutine(CookingRoutine());
+        }
+        else if (finishCooking)
+        {
+            Debug.Log("[Interactable] Finished Cooking");
+            cooking.FinishCooking();
+            cooking.SetIndexCooking(stage);
+            finishCooking = false;
+        }
+        else
+        {
+            Debug.Log("[Interactable] Unable to Cook");
+        }
+    }
+
+    IEnumerator CookingRoutine()
+    {
+        timerIcon.SetActive(true);
+        interactIcon.SetActive(false);
+        cookingCounter = cookingTimer;
+
+        while (cookingCounter > 0)
+        {
+            cookingCounter -= Time.deltaTime;
+            timerNeedle.transform.rotation = Quaternion.Euler(270 - (cookingCounter * 72), 90, -90);
+            yield return Time.deltaTime;
+        }
+
+        finishCooking = true;
+        timerIcon.SetActive(false);
+        interactIcon.SetActive(true);
+        Debug.Log("[Interactable] Finished Cooking with New Cooking Index " + cooking.G_IndexCooking);
     }
 }

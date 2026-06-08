@@ -107,7 +107,7 @@ public class UIManager : MonoBehaviour
 
         if (gameOverMessage != null)
         {
-            gameOverMessage.text = "Waktu Habis!";
+            gameOverMessage.text = "Time's Up!";
         }
     }
 
@@ -125,7 +125,7 @@ public class UIManager : MonoBehaviour
 
         if (gameOverMessage != null)
         {
-            gameOverMessage.text = "Selamat! Kamu Menang!";
+            gameOverMessage.text = "You Win!";
         }
     }
 
