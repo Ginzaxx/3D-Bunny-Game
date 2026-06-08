@@ -189,9 +189,15 @@ public class CookingManager : MonoBehaviour
             kitObject.SetActive(false);
 
         if (indexRequest == indexCooking)
-            scoreManager.AddScore(50);
+        {
+            scoreManager.AddScore(20);
+            scoreManager.AddCarrot(10);
+        }
         else
-            scoreManager.AddScore(-25);
+        {
+            scoreManager.AddScore(-10);
+            scoreManager.AddCarrot(-5);
+        }
 
         indexRequest = 0;
         indexCooking = 0;
