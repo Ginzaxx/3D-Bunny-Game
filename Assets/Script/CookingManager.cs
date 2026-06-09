@@ -76,18 +76,23 @@ public class CookingManager : MonoBehaviour
     public void StartRequest()
     {
         hasRequest = true;
-        cookingObjects[0].SetActive(true);
+        cookingIndex = 0;
+        cookingObjects[cookingIndex].SetActive(true);
+        Debug.Log($"[CookingManager] Request Index : {requestIndex}");
     }
 
     public void StartCooking()
     {
         isCooking = true;
-        cookingObjects[0].SetActive(false);
+        cookingObjects[cookingIndex].SetActive(false);
     }
 
-    public void FinishCooking()
+    public void FinishCooking(CookStage stage)
     {
         isCooking = false;
+        cookingIndex = (int)stage;
+        cookingObjects[cookingIndex].SetActive(true);
+        Debug.Log($"[CookingManager] Cooking Index : {cookingIndex}");
     }
 
     public void FinishRequest()
@@ -96,21 +101,13 @@ public class CookingManager : MonoBehaviour
         StartCoroutine(DespawnKit());
     }
 
-    public void SetIndexCooking(CookStage stage)
-    {
-        cookingIndex = (int)stage;
-        cookingObjects[cookingIndex].SetActive(true);
-        Debug.Log($"[CookingManager] Cooking Index : {cookingIndex}");
-    }
-
     private void SetRequest()
     {
         kitObject.SetActive(true);
 
-        cookingIndex = 0;
         requestIndex = Random.Range(1, 4);
         requestObjects[requestIndex].SetActive(true);
-        Debug.Log($"[CookingManager] Request Index : {requestIndex}");
+        Debug.Log($"[CookingManager] Set Request");
     }
 
     private void ResetRequest()

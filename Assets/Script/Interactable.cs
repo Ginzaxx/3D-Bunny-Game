@@ -97,8 +97,7 @@ public class Interactable : MonoBehaviour
         else if (finishCooking)
         {
             Debug.Log("[Interactable] Finished Cooking");
-            cooking.FinishCooking();
-            cooking.SetIndexCooking(stage);
+            cooking.FinishCooking(stage);
             finishCooking = false;
         }
         else
