@@ -86,12 +86,12 @@ public class AudioManager : MonoBehaviour
     public void PlayFoxAppear()     => PlaySFX(sfxFoxAppear, 2.0f);
     public void PlayFoxClick()      => PlaySFX(sfxFoxClick, 3.0f);
     public void PlayFoxMissed()     => PlaySFX(sfxFoxMissed, 3.0f);
-    public void PlayChopping()      => PlaySFX(sfxChopping);
-    public void PlayGrilling()      => PlaySFX(sfxGrilling);
-    public void PlayBoiling()       => PlaySFX(sfxBoiling);
+    public void PlayChopping()      => PlaySFX(sfxChopping, 3.0f);
+    public void PlayGrilling()      => PlaySFX(sfxGrilling, 3.0f);
+    public void PlayBoiling()       => PlaySFX(sfxBoiling, 3.0f);
     public void PlayButton()        => PlaySFX(sfxButton);
     public void PlayTimer()         => PlaySFX(sfxTimer);
-    public void PlayKit()           => PlaySFX(sfxKit);
+    public void PlayKit()           => PlaySFX(sfxKit, 3.0f);
     public void PlaySeasonChange()  => PlaySFX(sfxSeasonChange);
     public void PlayWin()           => PlaySFX(sfxGameWin);
     public void PlayLose()          => PlaySFX(sfxGameLose);

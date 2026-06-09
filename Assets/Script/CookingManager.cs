@@ -49,6 +49,7 @@ public class CookingManager : MonoBehaviour
     {
         isSpawning = true;
         StartCoroutine(DespawnKit());
+        AudioManager.Instance.PlaySnowMusic();
     }
 
     public void StopSpawning()
