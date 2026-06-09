@@ -19,7 +19,6 @@ public class CookingManager : MonoBehaviour
     [SerializeField] private int requestIndex;
     [SerializeField] private int cookingIndex;
     [SerializeField] private bool hasRequest;
-    [SerializeField] private bool hasCooked;
     [SerializeField] private bool isCooking;
 
     [Header("References")]
@@ -49,7 +48,6 @@ public class CookingManager : MonoBehaviour
     {
         isSpawning = true;
         StartCoroutine(DespawnKit());
-        AudioManager.Instance.PlaySnowMusic();
     }
 
     public void StopSpawning()
@@ -84,7 +82,6 @@ public class CookingManager : MonoBehaviour
     public void StartCooking()
     {
         isCooking = true;
-        hasCooked = true;
         cookingObjects[0].SetActive(false);
     }
 
@@ -96,7 +93,6 @@ public class CookingManager : MonoBehaviour
     public void FinishRequest()
     {
         hasRequest = false;
-        hasCooked = false;
         StartCoroutine(DespawnKit());
     }
 
@@ -144,6 +140,5 @@ public class CookingManager : MonoBehaviour
     public int G_IndexRequest => requestIndex;
     public int G_IndexCooking => cookingIndex;
     public bool G_HasRequest => hasRequest;
-    public bool G_HasCooked => hasCooked;
     public bool G_IsCooking => isCooking;
 }

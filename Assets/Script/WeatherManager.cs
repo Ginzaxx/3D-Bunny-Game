@@ -61,6 +61,8 @@ public class WeatherManager : MonoBehaviour
         if (snowSpecialObject   != null) snowSpecialObject.SetActive(false);
 
         AudioManager.Instance?.PlayMusicForWeather(weather);
+        CookingManager cook = FindAnyObjectByType<CookingManager>();
+        if (cook != null) AudioManager.Instance?.PlayMusicForWeather(WeatherType.Snow);
 
         switch (weather)
         {

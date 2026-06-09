@@ -73,7 +73,7 @@ public class AudioManager : MonoBehaviour
 
         musicSource.clip = clip;
         musicSource.loop = true;
-        musicSource.volume = 0.8f; // Set default music volume to 0.8
+        musicSource.volume = 0.6f;
         musicSource.Play();
     }
 
@@ -81,7 +81,7 @@ public class AudioManager : MonoBehaviour
     //   SFX
     // ============================
 
-    public void PlayCatchNormal()   => PlaySFX(sfxCatchCarrotNormal);
+    public void PlayCatchNormal()   => PlaySFX(sfxCatchCarrotNormal, 2.0f);
     public void PlayCatchFrozen()   => PlaySFX(sfxCatchCarrotFrozen);
     public void PlayFoxAppear()     => PlaySFX(sfxFoxAppear, 2.0f);
     public void PlayFoxClick()      => PlaySFX(sfxFoxClick, 3.0f);
@@ -91,7 +91,7 @@ public class AudioManager : MonoBehaviour
     public void PlayBoiling()       => PlaySFX(sfxBoiling, 3.0f);
     public void PlayButton()        => PlaySFX(sfxButton);
     public void PlayTimer()         => PlaySFX(sfxTimer);
-    public void PlayKit()           => PlaySFX(sfxKit, 3.0f);
+    public void PlayKit()           => PlaySFX(sfxKit, 4.0f);
     public void PlaySeasonChange()  => PlaySFX(sfxSeasonChange);
     public void PlayWin()           => PlaySFX(sfxGameWin);
     public void PlayLose()          => PlaySFX(sfxGameLose);

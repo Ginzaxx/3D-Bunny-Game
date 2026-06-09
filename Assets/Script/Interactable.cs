@@ -75,6 +75,7 @@ public class Interactable : MonoBehaviour
         {
             Debug.Log("[Interactable] Finished Request");
             cooking.FinishRequest();
+            PlayCookingSFX();
         }
         else
         {
@@ -87,11 +88,10 @@ public class Interactable : MonoBehaviour
         if (cooking == null) return;
         if (!cooking.G_HasRequest) return;
 
-        if (!cooking.G_HasCooked)
+        if (!cooking.G_IsCooking)
         {
             Debug.Log("[Interactable] Started Cooking");
             cooking.StartCooking();
-            PlayCookingSFX();
             StartCoroutine(CookingRoutine());
         }
         else if (finishCooking)
@@ -99,7 +99,6 @@ public class Interactable : MonoBehaviour
             Debug.Log("[Interactable] Finished Cooking");
             cooking.FinishCooking();
             cooking.SetIndexCooking(stage);
-            PlayTimerSFX();
             finishCooking = false;
         }
         else
@@ -113,6 +112,7 @@ public class Interactable : MonoBehaviour
         timerIcon.SetActive(true);
         interactIcon.SetActive(false);
         cookingCounter = cookingTimer;
+        PlayCookingSFX();
 
         while (cookingCounter > 0)
         {
@@ -121,6 +121,7 @@ public class Interactable : MonoBehaviour
             yield return Time.deltaTime;
         }
 
+        PlayTimerSFX();
         finishCooking = true;
         timerIcon.SetActive(false);
         interactIcon.SetActive(true);
