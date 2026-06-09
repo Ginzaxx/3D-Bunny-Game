@@ -64,7 +64,7 @@ public class WeatherManager : MonoBehaviour
 
         switch (weather)
         {
-            case WeatherType.DayDry:      ApplyDayWeather();       break;
+            case WeatherType.DayDry:       ApplyDayWeather();       break;
             case WeatherType.AfternoonDry: ApplyAfternoonWeather(); break;
             case WeatherType.Snow:         ApplySnowWeather();      break;
         }

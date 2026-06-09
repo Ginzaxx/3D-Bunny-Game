@@ -20,9 +20,12 @@ public class AudioManager : MonoBehaviour
     public AudioClip sfxFoxAppear;
     public AudioClip sfxFoxClick;
     public AudioClip sfxFoxMissed;
-    public AudioClip sfxTimerLow;
-    public AudioClip sfxGameOver;
-    public AudioClip sfxButtonClick;
+    public AudioClip sfxChopping;
+    public AudioClip sfxGrilling;
+    public AudioClip sfxBoiling;
+    public AudioClip sfxButton;
+    public AudioClip sfxTimer;
+    public AudioClip sfxKit;
     public AudioClip sfxSeasonChange;
     public AudioClip sfxGameWin;
     public AudioClip sfxGameLose;
@@ -78,17 +81,20 @@ public class AudioManager : MonoBehaviour
     //   SFX
     // ============================
 
-    public void PlayCatchNormal()    => PlaySFX(sfxCatchCarrotNormal);
-    public void PlayCatchFrozen()    => PlaySFX(sfxCatchCarrotFrozen);
-    public void PlayFoxAppear()      => PlaySFX(sfxFoxAppear, 2.0f); // Volume 2x
-    public void PlayFoxClick()       => PlaySFX(sfxFoxClick, 3.0f);  // Volume 2x
-    public void PlayFoxMissed()      => PlaySFX(sfxFoxMissed, 3.0f); // Volume 2x
-    public void PlayTimerLow()       => PlaySFX(sfxTimerLow);
-    public void PlayGameOver()       => PlaySFX(sfxGameOver);
-    public void PlayButtonClick()    => PlaySFX(sfxButtonClick);
-    public void PlaySeasonChange()   => PlaySFX(sfxSeasonChange);
-    public void PlayWin()            => PlaySFX(sfxGameWin);
-    public void PlayLose()           => PlaySFX(sfxGameLose);
+    public void PlayCatchNormal()   => PlaySFX(sfxCatchCarrotNormal);
+    public void PlayCatchFrozen()   => PlaySFX(sfxCatchCarrotFrozen);
+    public void PlayFoxAppear()     => PlaySFX(sfxFoxAppear, 2.0f);
+    public void PlayFoxClick()      => PlaySFX(sfxFoxClick, 3.0f);
+    public void PlayFoxMissed()     => PlaySFX(sfxFoxMissed, 3.0f);
+    public void PlayChopping()      => PlaySFX(sfxChopping);
+    public void PlayGrilling()      => PlaySFX(sfxGrilling);
+    public void PlayBoiling()       => PlaySFX(sfxBoiling);
+    public void PlayButton()        => PlaySFX(sfxButton);
+    public void PlayTimer()         => PlaySFX(sfxTimer);
+    public void PlayKit()           => PlaySFX(sfxKit);
+    public void PlaySeasonChange()  => PlaySFX(sfxSeasonChange);
+    public void PlayWin()           => PlaySFX(sfxGameWin);
+    public void PlayLose()          => PlaySFX(sfxGameLose);
 
     void PlaySFX(AudioClip clip, float volumeMultiplier = 1.0f)
     {

@@ -14303,9 +14303,12 @@ MonoBehaviour:
   sfxFoxAppear: {fileID: 8300000, guid: 7491f2cec28ac2d4c84612aa1176846f, type: 3}
   sfxFoxClick: {fileID: 8300000, guid: a3e8dea6e33856740a0d03689debca95, type: 3}
   sfxFoxMissed: {fileID: 8300000, guid: a3e8dea6e33856740a0d03689debca95, type: 3}
-  sfxTimerLow: {fileID: 0}
-  sfxGameOver: {fileID: 8300000, guid: 03a54d77cd966ef48bca9295df659736, type: 3}
-  sfxButtonClick: {fileID: 0}
+  sfxChopping: {fileID: 8300000, guid: 43d1821ec1980b4408a40fcf6103dee3, type: 3}
+  sfxGrilling: {fileID: 8300000, guid: c1117f3526420804db3ce5f4ce20dfee, type: 3}
+  sfxBoiling: {fileID: 8300000, guid: 1b86b7280dae46c4783adfccf3e64ddc, type: 3}
+  sfxButton: {fileID: 8300000, guid: 668ad9854d78e2f4db8eb551667c953f, type: 3}
+  sfxTimer: {fileID: 8300000, guid: 225c9134f4c6fd7439d97181577d7eae, type: 3}
+  sfxKit: {fileID: 8300000, guid: ee831059309f31542958a3a2b890f42a, type: 3}
   sfxSeasonChange: {fileID: 8300000, guid: edea8659c96bad14593e7dbe26a9bcd5, type: 3}
   sfxGameWin: {fileID: 8300000, guid: af8ff36cd3b34574b89995de8a7aa0af, type: 3}
   sfxGameLose: {fileID: 8300000, guid: 03a54d77cd966ef48bca9295df659736, type: 3}
