@@ -5531,9 +5531,12 @@ MonoBehaviour:
   sfxFoxAppear: {fileID: 0}
   sfxFoxClick: {fileID: 0}
   sfxFoxMissed: {fileID: 0}
-  sfxTimerLow: {fileID: 0}
-  sfxGameOver: {fileID: 0}
-  sfxButtonClick: {fileID: 0}
+  sfxChopping: {fileID: 0}
+  sfxGrilling: {fileID: 0}
+  sfxBoiling: {fileID: 0}
+  sfxButton: {fileID: 0}
+  sfxTimer: {fileID: 0}
+  sfxKit: {fileID: 0}
   sfxSeasonChange: {fileID: 0}
   sfxGameWin: {fileID: 0}
   sfxGameLose: {fileID: 0}
@@ -7155,7 +7158,6 @@ MonoBehaviour:
   requestIndex: 0
   cookingIndex: 0
   hasRequest: 0
-  hasCooked: 0
   isCooking: 0
   scoreManager: {fileID: 1769359142}
   timerManager: {fileID: 90273218}
@@ -7732,8 +7734,8 @@ MonoBehaviour:
   scoreText: {fileID: 346324978}
   highScoreText: {fileID: 1565511376}
   carrotText: {fileID: 381741259}
-  afternoonThreshold: 61
-  snowThreshold: 121
+  afternoonThreshold: 70
+  snowThreshold: 140
   targetCarrots: 60
   <CurrentScore>k__BackingField: 0
   <CarrotCount>k__BackingField: 0
